@@ -65,53 +65,49 @@ export const PostCard = ({ post }: PostCardProps) => {
   };
 
   return (
-    <article className="w-full rounded-2xl bg-[var(--card)] border border-[var(--card-border)] p-5 md:p-6 shadow-sm space-y-4">
+    <article className="w-full rounded-2xl bg-card border border-card-border p-5 md:p-6 shadow-sm space-y-4">
       {/* Cabeçalho do Post */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
             src={post.avatar}
             alt={post.author}
-            className="w-10 h-10 rounded-full border border-[var(--card-border)] bg-[var(--background)]"
+            className="w-10 h-10 rounded-full border border-card-border bg-background"
           />
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-[var(--foreground)] text-sm">
+              <span className="font-bold text-foreground text-sm">
                 {post.author}
               </span>
-              <span className="text-xs text-[var(--muted)]">
-                @{post.handle}
-              </span>
+              <span className="text-xs text-muted">@{post.handle}</span>
             </div>
-            <span className="text-xs text-[var(--muted)]">
-              {post.createdAt}
-            </span>
+            <span className="text-xs text-muted">{post.createdAt}</span>
           </div>
         </div>
 
         {/* Custo de Comentário & Pool Badge */}
         <div className="text-right">
-          <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-500/10 text-[var(--primary)] border border-purple-500/20">
+          <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-500/10 text-primary border border-purple-500/20">
             {post.commentFeeSol} SOL / comentário
           </span>
         </div>
       </div>
 
       {/* Conteúdo do Post */}
-      <p className="text-sm md:text-base text-[var(--foreground)] leading-relaxed">
+      <p className="text-sm md:text-base text-foreground leading-relaxed">
         {post.content}
       </p>
 
       {/* Ações: Upvote / Downvote & Estatísticas */}
-      <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)] text-xs text-[var(--muted)]">
+      <div className="flex items-center justify-between pt-2 border-t border-card-border text-xs text-muted">
         <div className="flex items-center gap-2">
           {/* Botão Upvote */}
           <button
             onClick={() => handleVote("up")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
               userVote === "up"
-                ? "bg-purple-500/10 border-[var(--primary)] text-[var(--primary)] font-bold"
-                : "border-[var(--card-border)] hover:border-[var(--muted)] text-[var(--foreground)]"
+                ? "bg-purple-500/10 border-primary text-primary font-bold"
+                : "border-card-border hover:border-muted text-foreground"
             }`}
           >
             ▲ <span>{likes}</span>
@@ -123,7 +119,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
               userVote === "down"
                 ? "bg-red-500/10 border-red-500 text-red-500 font-bold"
-                : "border-[var(--card-border)] hover:border-[var(--muted)] text-[var(--foreground)]"
+                : "border-card-border hover:border-muted text-foreground"
             }`}
           >
             ▼ <span>{dislikes}</span>
@@ -144,12 +140,12 @@ export const PostCard = ({ post }: PostCardProps) => {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Adicione um comentário de alto valor..."
-            className="flex-1 bg-[var(--background)] border border-[var(--card-border)] rounded-xl px-4 py-2.5 text-sm text-[var(--foreground)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--primary)] transition-all"
+            className="flex-1 bg-background border border-card-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder-muted focus:outline-none focus:border-primary transition-all"
           />
           <button
             type="submit"
             disabled={isSubmitting || !newComment.trim()}
-            className="px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-40 flex items-center justify-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-40 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <span>Confirmando...</span>
@@ -167,7 +163,7 @@ export const PostCard = ({ post }: PostCardProps) => {
 
       {/* Toast de Sucesso Simulado */}
       {showSuccessToast && (
-        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-[var(--success)] animate-fade-in">
+        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-success animate-fade-in">
           ⚡ Transação confirmada! {post.commentFeeSol} SOL divididos entre
           Criador e Piñata Pool.
         </div>
@@ -175,33 +171,31 @@ export const PostCard = ({ post }: PostCardProps) => {
 
       {/* Lista de Comentários */}
       {comments.length > 0 && (
-        <div className="space-y-3 pt-3 border-t border-[var(--card-border)]">
+        <div className="space-y-3 pt-3 border-t border-card-border">
           {comments.map((comment) => (
             <div
               key={comment.id}
-              className="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-1.5"
+              className="p-3.5 rounded-xl bg-background border border-card-border space-y-1.5"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img
                     src={comment.avatar}
                     alt={comment.author}
-                    className="w-6 h-6 rounded-full border border-[var(--card-border)]"
+                    className="w-6 h-6 rounded-full border border-card-border"
                   />
-                  <span className="font-bold text-xs text-[var(--foreground)]">
+                  <span className="font-bold text-xs text-foreground">
                     {comment.author}
                   </span>
-                  <span className="text-[10px] text-[var(--muted)]">
+                  <span className="text-[10px] text-muted">
                     {comment.timestamp}
                   </span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-[var(--success)] font-mono font-semibold">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-success font-mono font-semibold">
                   ✓ Pago: {comment.paidAmountSol} SOL
                 </span>
               </div>
-              <p className="text-xs text-[var(--foreground)] pl-8">
-                {comment.content}
-              </p>
+              <p className="text-xs text-foreground pl-8">{comment.content}</p>
             </div>
           ))}
         </div>
