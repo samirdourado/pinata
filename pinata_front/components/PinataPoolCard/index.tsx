@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export const PinataPoolCard = () => {
@@ -38,7 +39,13 @@ export const PinataPoolCard = () => {
           </div>
 
           <h2 className="text-3xl font-black tracking-tight text-foreground flex items-center justify-center md:justify-start gap-2">
-            🪅 Piñata Pool
+            <Image
+              alt="Pinata image."
+              src="/pinataB.png"
+              width={20}
+              height={20}
+            />{" "}
+            Piñata Pool
           </h2>
 
           <p className="text-sm text-muted max-w-lg">
@@ -93,11 +100,21 @@ export const PinataPoolCard = () => {
           <button
             onClick={handlePopPinata}
             disabled={isPopping}
-            className="w-full md:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+            className="w-full flex gap-2 items-center md:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-(--text-primary) text-sm font-bold shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
           >
-            {isPopping
-              ? "🎲 Estourando Piñata..."
-              : "🪅 Simular Sorteio (Estourar)"}
+            {isPopping ? (
+              "🎲 Estourando Piñata..."
+            ) : (
+              <>
+                <Image
+                  alt="Pinata image."
+                  src="/pinataB.png"
+                  width={20}
+                  height={20}
+                />
+                "Estourar Piñata"
+              </>
+            )}
           </button>
         </div>
       </div>

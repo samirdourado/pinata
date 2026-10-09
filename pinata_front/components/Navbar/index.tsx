@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 export const Navbar = () => {
   // Estado simulado da carteira para teste e apresentação no Hackathon
@@ -17,13 +18,16 @@ export const Navbar = () => {
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         {/* Logo & Nome */}
         <div className="flex items-center gap-2 cursor-pointer">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-primary to-accent flex items-center justify-center text-xl shadow-lg shadow-purple-500/20">
-            🪅
+          <div className="w-10 h-10 flex items-center justify-center text-xl">
+            <Image
+              alt="Pinata image."
+              src="/pinataA.png"
+              width={60}
+              height={60}
+            />
           </div>
           <div>
-            <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-primary to-accent">
-              Pinata
-            </span>
+            <span className="text-xl font-black">Pinata</span>
             <span className="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-purple-500/10 text-primary font-medium border border-purple-500/20">
               Devnet
             </span>
