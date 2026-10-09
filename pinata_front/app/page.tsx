@@ -5,7 +5,7 @@ import { INITIAL_POSTS } from "@/data/mockData";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
 
       {/* Alinhado com a mesma largura do header (max-w-6xl) */}
@@ -17,9 +17,9 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Feed Principal de Posts */}
           <section className="lg:col-span-2 space-y-4">
-            <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center justify-between">
+            <h3 className="text-lg font-bold text-foreground flex items-center justify-between">
               <span>🔥 Trending Posts</span>
-              <span className="text-xs font-normal text-[var(--muted)]">
+              <span className="text-xs font-normal text-muted">
                 Filtrado por engajamento e votos
               </span>
             </h3>
@@ -31,12 +31,12 @@ export default function Home() {
 
           {/* Sidebar Lateral (Informações do Protocolo / Regras) */}
           <aside className="space-y-4">
-            <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] p-5 shadow-sm space-y-3">
-              <h4 className="font-bold text-sm text-[var(--foreground)]">
+            <div className="rounded-2xl bg-card border border-card-border p-5 shadow-sm space-y-3">
+              <h4 className="font-bold text-sm text-foreground">
                 💡 Como funciona o Pinata?
               </h4>
 
-              <ul className="text-xs text-[var(--muted)] space-y-2 leading-relaxed">
+              <ul className="text-xs text-muted space-y-2 leading-relaxed">
                 <li className="flex gap-2">
                   <span>1.</span>
                   <span>
@@ -61,18 +61,18 @@ export default function Home() {
               </ul>
             </div>
 
-            <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] p-5 shadow-sm space-y-2">
-              <h4 className="font-bold text-sm text-[var(--foreground)]">
+            <div className="rounded-2xl bg-card border border-card-border p-5 shadow-sm space-y-2">
+              <h4 className="font-bold text-sm text-foreground">
                 📊 Estatísticas do Protocolo
               </h4>
-              <div className="text-xs text-[var(--muted)] space-y-1">
+              <div className="text-xs text-muted space-y-1">
                 <p>
                   Comentários Filtrados:{" "}
-                  <strong className="text-[var(--foreground)]">1,420</strong>
+                  <strong className="text-foreground">1,420</strong>
                 </p>
                 <p>
                   Total Distribuído a Criadores:{" "}
-                  <strong className="text-[var(--primary)]">12.85 SOL</strong>
+                  <strong className="text-primary">12.85 SOL</strong>
                 </p>
               </div>
             </div>
