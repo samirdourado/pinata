@@ -13,7 +13,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-card-border bg-(--card)/80 backdrop-blur-md px-4 lg:px-8 py-3 transition-colors">
+    <header className="sticky top-0 z-50 w-full border-b border-card-border bg-(--card)/80 backdrop-blur-md px-4 sm:px-8 xl:px-0 py-3">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         {/* Logo & Nome */}
         <div className="flex items-center gap-2 cursor-pointer">

@@ -9,7 +9,7 @@ export default function Home() {
       <Navbar />
 
       {/* Alinhado com a mesma largura do header (max-w-6xl) */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 xl:px-0 py-6 space-y-6">
         {/* Card do Piñata Pool (Sorteio) */}
         <PinataPoolCard />
 
