@@ -47,23 +47,23 @@ export const MonthlyCountdown = () => {
 
   return (
     <div
-      className="flex items-center gap-1.5 text-base font-mono font-bold text-primary sm:gap-2 sm:text-lg"
+      className="flex items-center justify-between text-base font-mono font-bold text-primary sm:text-lg"
       role="timer"
       aria-label={`${countdown.days} dias, ${countdown.hours} horas, ${countdown.minutes} minutos e ${countdown.seconds} segundos até o sorteio mensal`}
     >
-      <span className="rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
+      <span className="w-full rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
         {format(countdown.days)}d
       </span>
       :
-      <span className="rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
+      <span className="w-full rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
         {format(countdown.hours)}h
       </span>
       :
-      <span className="rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
+      <span className="w-full rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
         {format(countdown.minutes)}m
       </span>
       :
-      <span className="rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
+      <span className="w-full rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
         {format(countdown.seconds)}s
       </span>
     </div>
