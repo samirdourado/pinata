@@ -1,4 +1,7 @@
 import { iPost } from "@/interface/post";
+import { iProfile, iProfileWinner } from "@/interface/profile";
+
+export const CURRENT_USER_HANDLE = "samirdourado";
 
 export const INITIAL_POSTS: iPost[] = [
   {
@@ -85,7 +88,7 @@ export const INITIAL_POSTS: iPost[] = [
   },
 ];
 
-export const PROFILES = [
+export const PROFILES: iProfile[] = [
   {
     name: 'Samir Dourado',
     handle: 'samirdourado',
@@ -144,3 +147,27 @@ export const RECENT_WINNERS = [
     prize: '0.19',
   },
 ];
+
+export const PROFILE_WINNERS: Record<string, iProfileWinner[]> = {
+  samirdourado: [
+    {
+      id: "samir-winner-1",
+      name: "CryptoDev",
+      handle: "cryptodev",
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=CryptoDev",
+      prizeSol: 0.18,
+      createdAt: "2026-10-02T12:00:00.000Z",
+    },
+    {
+      id: "samir-winner-2",
+      name: "Web3Builder",
+      handle: "web3builder",
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Web3Builder",
+      prizeSol: 0.12,
+      createdAt: "2026-09-24T12:00:00.000Z",
+    },
+  ],
+  superteambr: [],
+  cryptodev: [],
+  web3builder: [],
+};

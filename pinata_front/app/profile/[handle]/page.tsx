@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProfileView } from "@/components/ProfileView";
-import { INITIAL_POSTS, PROFILES } from "@/data/mockData";
+import { PROFILES } from "@/data/mockData";
 
 async function PublicProfileContent({
   params,
@@ -13,11 +13,7 @@ async function PublicProfileContent({
 
   if (!profile) notFound();
 
-  const userPosts = INITIAL_POSTS.filter((post) => post.handle === handle);
-
-  return (
-    <ProfileView profile={profile} posts={userPosts} isOwnProfile={false} />
-  );
+  return <ProfileView profile={profile} />;
 }
 
 function ProfileFallback() {

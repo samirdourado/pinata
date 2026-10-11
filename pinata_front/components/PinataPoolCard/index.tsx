@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { PinataProgress } from "@/components/PinataProgress";
 
 export const PinataPoolCard = () => {
   const [poolBalance] = useState(0.575);
@@ -134,14 +135,7 @@ export const PinataPoolCard = () => {
                 <span className="text-primary font-bold">85%</span>
               </div>
 
-              {/* Trilha da Barra */}
-              <div className="w-full h-2.5 rounded-full bg-background border border-card-border overflow-hidden">
-                {/* Preenchimento em 85% */}
-                <div
-                  className="h-full rounded-full bg-linear-to-r from-primary to-accent transition-all duration-500"
-                  style={{ width: "85%" }}
-                />
-              </div>
+              <PinataProgress valueSol={0.85} targetSol={1} />
             </div>
           </div>
         </div>

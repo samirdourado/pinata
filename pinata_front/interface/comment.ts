@@ -5,4 +5,6 @@ export interface iComment {
   content: string;
   paidAmountSol: number;
   timestamp: string;
+  createdAt?: string;
+  handle?: string;
 };

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { Navbar } from "@/components/Navbar";
+import { SocialProvider } from "@/components/SocialProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,14 +28,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Suspense
-          fallback={
-            <div className="sticky top-0 z-50 h-17 border-b border-card-border bg-card" />
-          }
-        >
-          <Navbar />
-        </Suspense>
-        {children}
+        <SocialProvider>
+          <Suspense
+            fallback={
+              <div className="sticky top-0 z-50 h-17 border-b border-card-border bg-card" />
+            }
+          >
+            <Navbar />
+          </Suspense>
+          {children}
+        </SocialProvider>
       </body>
     </html>
   );

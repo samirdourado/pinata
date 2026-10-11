@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 const navigation = [
   { label: "Página Inicial", href: "/" },
   { label: "Trending Posts", href: "/trending" },
-  { label: "Me", href: "/me" },
+  { label: "Profile", href: "/profile/samirdourado" },
 ];
 
 const notifications = [
@@ -55,7 +55,10 @@ export const Navbar = () => {
           className="order-3 flex w-full items-center gap-1 overflow-x-auto sm:order-2 sm:w-auto"
         >
           {navigation.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              pathname === item.href ||
+              (item.href === "/profile/samirdourado" &&
+                pathname.startsWith("/profile/"));
             return (
               <Link
                 key={item.href}

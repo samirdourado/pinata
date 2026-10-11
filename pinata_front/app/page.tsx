@@ -1,11 +1,14 @@
+"use client";
+
 import { PinataPoolCard } from "@/components/PinataPoolCard";
 import { PostCard } from "@/components/PostCard";
-import { INITIAL_POSTS, RECENT_WINNERS } from "@/data/mockData";
+import { useSocial } from "@/components/SocialProvider";
+import { RECENT_WINNERS } from "@/data/mockData";
+import { sortPosts } from "@/utils/sortPosts";
 
 export default function Home() {
-  const trendingPosts = [...INITIAL_POSTS]
-    .sort((first, second) => second.likes - first.likes)
-    .slice(0, 3);
+  const { posts } = useSocial();
+  const trendingPosts = sortPosts(posts, "score").slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">

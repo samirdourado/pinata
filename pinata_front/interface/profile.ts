@@ -7,3 +7,12 @@ export interface iProfile {
   pinataBalanceSol: number;
   pinataTargetSol: number;
 }
+
+export interface iProfileWinner {
+  id: string;
+  name: string;
+  handle: string;
+  avatar: string;
+  prizeSol: number;
+  createdAt: string;
+}

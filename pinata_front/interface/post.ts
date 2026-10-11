@@ -12,4 +12,5 @@ export interface iPost {
   pinataPoolSol: number;
   comments: iComment[];
   createdAt: string;
+  voteUpdatedAt?: number;
 };
