@@ -49,8 +49,9 @@ export const PinataPoolCard = () => {
           </h2>
 
           <p className="text-sm text-muted max-w-lg">
-            Cada comentário pago alimenta o acumulado. No final do ciclo, todo o
-            valor em SOL é sorteado exclusivamente entre os comentaristas!
+            Cada comentário pago alimenta o Pinata Pool. Com a pinata cheia, 3
+            usuários com comentários válidos são sorteados entre os
+            comentaristas!
           </p>
 
           <div className="flex items-center justify-center md:justify-start gap-6 pt-2">
@@ -97,7 +98,7 @@ export const PinataPoolCard = () => {
             </div>
           </div>
 
-          <button
+          {/* <button
             onClick={handlePopPinata}
             disabled={isPopping}
             className="w-full flex gap-2 items-center md:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-(--text-primary) text-sm font-bold shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
@@ -115,7 +116,34 @@ export const PinataPoolCard = () => {
                 "Estourar Piñata"
               </>
             )}
-          </button>
+          </button> */}
+          <div className="w-full md:w-auto flex items-center gap-3 bg-card p-3 rounded-xl border border-card-border">
+            {/* Imagem da Piñata */}
+            <Image
+              alt="Pinata image"
+              src="/pinataB.png"
+              width={24}
+              height={24}
+              className="shrink-0"
+            />
+
+            {/* Barra de Progresso e Métricas */}
+            <div className="flex-1 min-w-40 space-y-1">
+              <div className="flex justify-between items-center text-xs font-semibold">
+                <span className="text-(--text-muted)">Meta do Pool</span>
+                <span className="text-primary font-bold">85%</span>
+              </div>
+
+              {/* Trilha da Barra */}
+              <div className="w-full h-2.5 rounded-full bg-background border border-card-border overflow-hidden">
+                {/* Preenchimento em 85% */}
+                <div
+                  className="h-full rounded-full bg-linear-to-r from-primary to-accent transition-all duration-500"
+                  style={{ width: "85%" }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

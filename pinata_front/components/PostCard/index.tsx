@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { iPost } from "@/interface/post";
 import { iComment } from "@/interface/comment";
 
@@ -76,9 +77,12 @@ export const PostCard = ({ post }: PostCardProps) => {
           />
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-foreground text-sm">
+              <Link
+                href={`/profile/${post.handle}`}
+                className="font-bold text-foreground text-sm hover:text-primary"
+              >
                 {post.author}
-              </span>
+              </Link>
               <span className="text-xs text-muted">@{post.handle}</span>
             </div>
             <span className="text-xs text-muted">{post.createdAt}</span>

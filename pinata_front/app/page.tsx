@@ -1,13 +1,14 @@
-import { Navbar } from "@/components/Navbar";
 import { PinataPoolCard } from "@/components/PinataPoolCard";
 import { PostCard } from "@/components/PostCard";
-import { INITIAL_POSTS } from "@/data/mockData";
+import { INITIAL_POSTS, RECENT_WINNERS } from "@/data/mockData";
 
 export default function Home() {
+  const trendingPosts = [...INITIAL_POSTS]
+    .sort((first, second) => second.likes - first.likes)
+    .slice(0, 3);
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <Navbar />
-
       {/* Alinhado com a mesma largura do header (max-w-6xl) */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 xl:px-0 py-6 space-y-6">
         {/* Card do Piñata Pool (Sorteio) */}
@@ -24,7 +25,7 @@ export default function Home() {
               </span>
             </h3>
 
-            {INITIAL_POSTS.map((post) => (
+            {trendingPosts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </section>
@@ -75,6 +76,32 @@ export default function Home() {
                   <strong className="text-primary">12.85 SOL</strong>
                 </p>
               </div>
+            </div>
+
+            <div className="rounded-2xl bg-card border border-card-border p-5 shadow-sm space-y-3">
+              <h4 className="font-bold text-sm text-foreground">
+                🏆 Últimos ganhadores
+              </h4>
+              <ul className="space-y-3">
+                {RECENT_WINNERS.map((winner) => (
+                  <li key={winner.handle} className="flex items-center gap-3">
+                    <img
+                      src={winner.avatar}
+                      alt=""
+                      className="w-9 h-9 rounded-full border border-card-border bg-background"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-foreground">
+                        {winner.name}
+                      </p>
+                      <p className="text-[11px] text-muted">@{winner.handle}</p>
+                    </div>
+                    <span className="text-xs font-bold text-success">
+                      {winner.prize} SOL
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </aside>
         </div>
