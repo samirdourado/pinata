@@ -104,7 +104,7 @@ export const PostDetailModal = ({
             )}
           </div>
           <div className="border-t border-card-border p-4">
-            <PostComposer post={post} />
+            <PostComposer post={post} layout="stacked" />
           </div>
         </aside>
       </section>

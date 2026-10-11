@@ -36,12 +36,15 @@ export const ProfileView = ({
     "score",
   );
   const winners = profileWinners[profile.handle] ?? [];
-  const interactedPosts = allPosts.filter(
-    (post) =>
-      post.comments.some((comment) => comment.handle === profile.handle) ||
-      (profile.handle === CURRENT_USER_HANDLE && Boolean(votes[post.id])),
-  );
   const isOwnProfile = profile.handle === CURRENT_USER_HANDLE;
+  const interactedPosts = isOwnProfile
+    ? allPosts.filter(
+        (post) =>
+          post.comments.some(
+            (comment) => comment.handle === CURRENT_USER_HANDLE,
+          ) || Boolean(votes[post.id]),
+      )
+    : [];
   const balanceSol = getProfilePinataSol(profile, allPosts);
   const balancePercent = Math.min(
     (balanceSol / profile.pinataTargetSol) * 100,
@@ -176,8 +179,12 @@ export const ProfileView = ({
         )}
       </section>
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-        <section className="space-y-4 lg:col-span-2">
+      <div
+        className={`grid grid-cols-1 items-start gap-6 ${
+          isOwnProfile ? "lg:grid-cols-3" : ""
+        }`}
+      >
+        <section className={`space-y-4 ${isOwnProfile ? "lg:col-span-2" : ""}`}>
           <div className="flex items-end justify-between gap-4">
             <h2 className="text-lg font-bold text-foreground">Postagens</h2>
             <span className="text-xs text-muted">
@@ -193,46 +200,51 @@ export const ProfileView = ({
           )}
         </section>
 
-        <aside className="space-y-3 lg:sticky lg:top-24">
-          <div>
-            <h2 className="text-lg font-bold text-foreground">Interações</h2>
-            <p className="text-xs text-muted">
-              Publicações em que @{profile.handle} comentou ou votou
-            </p>
-          </div>
-          {interactedPosts.length ? (
-            <ul className="divide-y divide-card-border rounded-xl border border-card-border bg-card px-4">
-              {interactedPosts.map((post) => (
-                <li key={post.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPost(post)}
-                    className="w-full py-3 text-left"
-                  >
-                    <span className="block truncate text-xs font-semibold text-foreground">
-                      {post.author}
-                    </span>
-                    <span className="mt-1 line-clamp-2 block text-xs text-muted">
-                      {post.content}
-                    </span>
-                    <span className="mt-2 block text-[10px] text-primary">
-                      {
-                        post.comments.filter(
-                          (comment) => comment.handle === profile.handle,
-                        ).length
-                      }{" "}
-                      comentários · {post.likes - post.dislikes} saldo de votos
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="rounded-xl border border-dashed border-card-border p-4 text-xs text-muted">
-              Ainda não há interações registradas.
+        {isOwnProfile && (
+          <aside className="space-y-3 lg:sticky lg:top-24">
+            <div>
+              <h2 className="text-lg font-bold text-foreground">
+                Minhas interações
+              </h2>
+              <p className="text-xs text-muted">
+                Publicações em que você comentou ou votou
+              </p>
             </div>
-          )}
-        </aside>
+            {interactedPosts.length ? (
+              <ul className="divide-y divide-card-border rounded-xl border border-card-border bg-card px-4">
+                {interactedPosts.map((post) => (
+                  <li key={post.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPost(post)}
+                      className="w-full py-3 text-left"
+                    >
+                      <span className="block truncate text-xs font-semibold text-foreground">
+                        {post.author}
+                      </span>
+                      <span className="mt-1 line-clamp-2 block text-xs text-muted">
+                        {post.content}
+                      </span>
+                      <span className="mt-2 block text-[10px] text-primary">
+                        {
+                          post.comments.filter(
+                            (comment) => comment.handle === profile.handle,
+                          ).length
+                        }{" "}
+                        comentários · {post.likes - post.dislikes} saldo de
+                        votos
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="rounded-xl border border-dashed border-card-border p-4 text-xs text-muted">
+                Ainda não há interações registradas.
+              </div>
+            )}
+          </aside>
+        )}
       </div>
       {selectedPost && (
         <PostDetailModal
