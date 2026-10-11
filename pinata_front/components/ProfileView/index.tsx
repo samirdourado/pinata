@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
@@ -26,8 +26,10 @@ export const ProfileView = ({
     votes,
     profiles,
     profileWinners,
+    createPost,
     popProfilePinata,
   } = useSocial();
+  const [postDraft, setPostDraft] = useState("");
   const profile =
     profiles.find((entry) => entry.handle === fallbackProfile.handle) ??
     fallbackProfile;
@@ -58,6 +60,13 @@ export const ProfileView = ({
     setLastWinner(popProfilePinata(profile.handle));
   };
 
+  const handleCreatePost = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!postDraft.trim()) return;
+    createPost(postDraft);
+    setPostDraft("");
+  };
+
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:px-8 xl:px-0">
       <section className="rounded-2xl border border-card-border bg-card p-5 shadow-sm sm:p-7">
@@ -76,7 +85,7 @@ export const ProfileView = ({
               {profile.bio}
             </p>
             <p className="mt-2 text-xs text-muted">
-              Na Pinata desde {profile.memberSince}
+              Joined Pinata in {profile.memberSince}
             </p>
           </div>
           <div className="w-full rounded-xl border border-card-border bg-background p-4 sm:w-72">
@@ -90,7 +99,7 @@ export const ProfileView = ({
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2 text-xs font-semibold">
-                  <span className="text-foreground">Piñata do usuário</span>
+                  <span className="text-foreground">User Piñata</span>
                   <span className="shrink-0 text-primary">
                     {balanceSol.toFixed(2)} /{" "}
                     {profile.pinataTargetSol.toFixed(2)} SOL
@@ -105,8 +114,8 @@ export const ProfileView = ({
             </div>
             <p className="mt-2 text-[11px] text-muted">
               {canPop
-                ? "Piñata pode ser estourada a qualquer momento."
-                : `Faltam ${percentToMinimum}% para liberar o estouro da pinata.`}
+                ? "The Piñata can be burst at any time."
+                : `Need ${percentToMinimum}% more to unlock the pinata burst.`}
             </p>
             {isOwnProfile && (
               <button
@@ -122,7 +131,7 @@ export const ProfileView = ({
                   height={18}
                   className="h-4.5 w-4.5"
                 />
-                Estourar Piñata
+                Burst Piñata
               </button>
             )}
             {lastWinner && (
@@ -130,7 +139,7 @@ export const ProfileView = ({
                 role="status"
                 className="mt-3 text-xs font-semibold text-success"
               >
-                {lastWinner.name} ganhou {lastWinner.prizeSol.toFixed(2)} SOL!
+                {lastWinner.name} won {lastWinner.prizeSol.toFixed(2)} SOL!
               </p>
             )}
           </div>
@@ -140,9 +149,9 @@ export const ProfileView = ({
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-lg font-bold text-foreground">
-            Últimos vencedores da Piñata
+            Latest Piñata winners
           </h2>
-          <span className="text-xs text-muted">{winners.length} sorteios</span>
+          <span className="text-xs text-muted">{winners.length} draws</span>
         </div>
         {winners.length ? (
           <ol className="divide-y divide-card-border rounded-xl border border-card-border bg-card px-4">
@@ -162,7 +171,7 @@ export const ProfileView = ({
                   </Link>
                   <RelativeTime
                     value={winner.createdAt}
-                    fallback="Sorteio recente"
+                    fallback="Recent draw"
                     className="text-[11px] text-muted"
                   />
                 </div>
@@ -174,7 +183,7 @@ export const ProfileView = ({
           </ol>
         ) : (
           <div className="rounded-xl border border-dashed border-card-border px-5 py-8 text-center text-sm text-muted">
-            Esta Piñata ainda não teve ganhadores.
+            This Piñata has not had winners yet.
           </div>
         )}
       </section>
@@ -186,28 +195,55 @@ export const ProfileView = ({
       >
         <section className={`space-y-4 ${isOwnProfile ? "lg:col-span-2" : ""}`}>
           <div className="flex items-end justify-between gap-4">
-            <h2 className="text-lg font-bold text-foreground">Postagens</h2>
+            <h2 className="text-lg font-bold text-foreground">Posts</h2>
             <span className="text-xs text-muted">
-              {posts.length} {posts.length === 1 ? "publicação" : "publicações"}
+              {posts.length} {posts.length === 1 ? "post" : "posts"}
             </span>
           </div>
           {posts.length ? (
             posts.map((post) => <PostCard key={post.id} post={post} />)
           ) : (
             <div className="rounded-xl border border-dashed border-card-border px-5 py-10 text-center text-sm text-muted">
-              Nenhuma postagem por aqui ainda.
+              No posts here yet.
             </div>
           )}
         </section>
 
         {isOwnProfile && (
-          <aside className="space-y-3 lg:sticky lg:top-24">
+          <aside className="space-y-4 lg:sticky lg:top-24">
+            <form
+              onSubmit={handleCreatePost}
+              className="rounded-2xl border border-card-border bg-card p-4 shadow-sm"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold text-foreground">
+                  Create a post
+                </h2>
+              </div>
+              <textarea
+                value={postDraft}
+                onChange={(event) => setPostDraft(event.target.value)}
+                rows={4}
+                placeholder="Share something with the community..."
+                className="w-full resize-none rounded-xl border border-card-border bg-background px-3 py-2.5 text-sm text-foreground placeholder-muted focus:border-primary focus:outline-none"
+              />
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={!postDraft.trim()}
+                  className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Publish
+                </button>
+              </div>
+            </form>
+
             <div>
               <h2 className="text-lg font-bold text-foreground">
-                Minhas interações
+                My interactions
               </h2>
               <p className="text-xs text-muted">
-                Publicações em que você comentou ou votou
+                Posts where you commented or voted
               </p>
             </div>
             {interactedPosts.length ? (
@@ -231,8 +267,7 @@ export const ProfileView = ({
                             (comment) => comment.handle === profile.handle,
                           ).length
                         }{" "}
-                        comentários · {post.likes - post.dislikes} saldo de
-                        votos
+                        comments · {post.likes - post.dislikes} vote balance
                       </span>
                     </button>
                   </li>
@@ -240,7 +275,7 @@ export const ProfileView = ({
               </ul>
             ) : (
               <div className="rounded-xl border border-dashed border-card-border p-4 text-xs text-muted">
-                Ainda não há interações registradas.
+                There are no interactions recorded yet.
               </div>
             )}
           </aside>

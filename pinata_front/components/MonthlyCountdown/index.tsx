@@ -49,7 +49,7 @@ export const MonthlyCountdown = () => {
     <div
       className="flex items-center justify-between text-base font-mono font-bold text-primary sm:text-lg"
       role="timer"
-      aria-label={`${countdown.days} dias, ${countdown.hours} horas, ${countdown.minutes} minutos e ${countdown.seconds} segundos até o sorteio mensal`}
+      aria-label={`${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes and ${countdown.seconds} seconds until the monthly draw`}
     >
       <span className="w-full rounded border border-card-border bg-card px-1.5 py-1 sm:px-2">
         {format(countdown.days)}d

@@ -18,13 +18,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Pinata",
   description:
-    "Rede social Web3 que elimina spam e recompensa engajamento de alto valor com o Piñata Pool.",
+    "A Web3 social network that eliminates spam and rewards high-value engagement with the Piñata Pool.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="pt-BR"
+      lang="en-US"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
