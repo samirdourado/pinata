@@ -16,7 +16,7 @@ export const PostActions = ({ post }: PostActionsProps) => {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          aria-label={`Dar upvote, ${post.likes} votos`}
+          aria-label={`Upvote, ${post.likes} votes`}
           aria-pressed={currentVote === "up"}
           onClick={() => vote(post.id, "up")}
           className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 transition-colors ${
@@ -29,7 +29,7 @@ export const PostActions = ({ post }: PostActionsProps) => {
         </button>
         <button
           type="button"
-          aria-label={`Dar downvote, ${post.dislikes} votos`}
+          aria-label={`Downvote, ${post.dislikes} votes`}
           aria-pressed={currentVote === "down"}
           onClick={() => vote(post.id, "down")}
           className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 transition-colors ${
@@ -44,7 +44,7 @@ export const PostActions = ({ post }: PostActionsProps) => {
       <div className="flex items-center gap-3">
         <span className="font-medium">
           💬 {post.comments.length}{" "}
-          {post.comments.length === 1 ? "comentário" : "comentários"}
+          {post.comments.length === 1 ? "comment" : "comments"}
         </span>
         <span className="font-semibold text-primary">
           Piñata {post.pinataPoolSol.toFixed(3)} SOL

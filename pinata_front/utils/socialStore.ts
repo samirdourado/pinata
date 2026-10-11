@@ -56,7 +56,6 @@ function publish(nextState: SocialState) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
-    // Keep the in-memory store usable when browser storage is unavailable.
   }
   listeners.forEach((listener) => listener());
 }
@@ -109,6 +108,36 @@ export function vote(postId: string, direction: Vote) {
         voteUpdatedAt: Date.now(),
       };
     }),
+  });
+}
+
+export function createPost(content: string) {
+  const trimmedContent = content.trim();
+  if (!trimmedContent) return;
+
+  const author = state.profiles.find(
+    (profile) => profile.handle === CURRENT_USER_HANDLE,
+  );
+  const createdAt = new Date().toISOString();
+  const newPost: iPost = {
+    id: `post-${crypto.randomUUID()}`,
+    author: author?.name ?? "Samir Dourado",
+    handle: CURRENT_USER_HANDLE,
+    avatar:
+      author?.avatar ?? "https://api.dicebear.com/7.x/bottts/svg?seed=Samir",
+    content: trimmedContent,
+    likes: 1,
+    dislikes: 0,
+    commentFeeSol: 0.005,
+    pinataPoolSol: 0,
+    comments: [],
+    createdAt: formatRelativeTime(createdAt),
+    voteUpdatedAt: Date.now(),
+  };
+
+  publish({
+    ...state,
+    posts: [newPost, ...state.posts],
   });
 }
 
@@ -192,7 +221,7 @@ export function popProfilePinata(handle: string) {
   const winner: iProfileWinner = {
     id: `winner-${crypto.randomUUID()}`,
     name: winnerProfile?.name ?? winnerComment.author,
-    handle: winnerProfile?.handle ?? winnerComment.handle ?? "comentarista",
+    handle: winnerProfile?.handle ?? winnerComment.handle ?? "commenter",
     avatar: winnerProfile?.avatar ?? winnerComment.avatar,
     prizeSol: balanceSol,
     createdAt: new Date().toISOString(),

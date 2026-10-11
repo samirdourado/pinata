@@ -42,7 +42,7 @@ export const PostCard = ({ post: fallbackPost }: PostCardProps) => {
           </div>
         </div>
         <span className="shrink-0 rounded-md border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-          Comentário livre · mín. 0,005 SOL
+          Open comment · min. 0.005 SOL
         </span>
       </div>
 
@@ -50,7 +50,7 @@ export const PostCard = ({ post: fallbackPost }: PostCardProps) => {
         type="button"
         onClick={() => setIsModalOpen(true)}
         className="block w-full whitespace-pre-wrap wrap-break-word text-left text-sm leading-relaxed text-foreground hover:text-primary md:text-base"
-        aria-label={`Abrir publicação de ${post.author}`}
+        aria-label={`Open post by ${post.author}`}
       >
         {post.content}
       </button>
@@ -67,10 +67,10 @@ export const PostCard = ({ post: fallbackPost }: PostCardProps) => {
               type="button"
               onClick={() => setIsModalOpen(true)}
               className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-semibold text-primary hover:bg-primary/5"
-              aria-label={`Ler mais ${post.comments.length - 2} comentários`}
+              aria-label={`Read more ${post.comments.length - 2} comments`}
             >
               <span>↓</span>
-              <span>Ver mais {post.comments.length - 2} comentários</span>
+              <span>View more {post.comments.length - 2} comments</span>
             </button>
           )}
         </div>

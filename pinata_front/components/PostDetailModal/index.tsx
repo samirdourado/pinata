@@ -40,13 +40,13 @@ export const PostDetailModal = ({
       <section
         role="dialog"
         aria-modal="true"
-        aria-label={`Publicação de ${post.author}`}
+        aria-label={`Post by ${post.author}`}
         className="relative grid h-dvh max-h-230 w-full grid-rows-[minmax(230px,42dvh)_minmax(0,1fr)] overflow-hidden bg-card text-foreground sm:h-[min(88vh,920px)] sm:max-w-5xl sm:grid-cols-[minmax(0,1fr)_minmax(20rem,38%)] sm:grid-rows-1 sm:rounded-2xl sm:border sm:border-card-border"
       >
         <button
           type="button"
           onClick={onClose}
-          aria-label="Fechar publicação"
+          aria-label="Close post"
           className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-lg text-white transition-colors hover:bg-black/70"
         >
           ×
@@ -79,7 +79,7 @@ export const PostDetailModal = ({
           </div>
           <div className="mt-6 space-y-3">
             <div className="text-xs font-semibold text-primary">
-              Valor livre · mínimo de 0,005 SOL por comentário
+              Open value · minimum 0.005 SOL per comment
             </div>
             <PostActions post={post} />
           </div>
@@ -88,7 +88,7 @@ export const PostDetailModal = ({
         <aside className="flex min-h-0 flex-col border-t border-card-border bg-card sm:border-l sm:border-t-0">
           <div className="border-b border-card-border px-4 py-3">
             <h2 className="text-sm font-bold text-foreground">
-              Comentários{" "}
+              Comments{" "}
               <span className="text-muted">({post.comments.length})</span>
             </h2>
           </div>
@@ -99,7 +99,7 @@ export const PostDetailModal = ({
               ))
             ) : (
               <p className="py-8 text-center text-xs text-muted">
-                Seja a primeira pessoa a comentar.
+                Be the first to comment.
               </p>
             )}
           </div>

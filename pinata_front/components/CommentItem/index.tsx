@@ -27,7 +27,7 @@ export const CommentItem = ({ comment }: { comment: iComment }) => {
             {comment.content}
           </p>
           <span className="mt-2 inline-block text-[10px] font-mono font-semibold text-success">
-            ✓ Pago: {comment.paidAmountSol} SOL
+            ✓ Paid: {comment.paidAmountSol} SOL
           </span>
         </div>
       </div>
