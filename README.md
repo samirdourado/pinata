@@ -1,21 +1,4 @@
 # Pinata
-<<<<<<< HEAD
----
-
-### 🇺🇸 - Description
-
-Pinata is a decentralized social protocol that redefines online interactions by transforming the act of commenting into a Web3 micro-transaction. By attaching a minimal financial cost to interaction, Pinata discourages trolling, malicious automation, and spam, creating an ecosystem of relevant content with direct financial incentives for creators and the community.
-
-The ecosystem combines on-chain transactions with SocialFi and gamification mechanisms based on automated prize pools (Piñata Pools).
-
----
-
-### 🇧🇷 - Descrição
-
-O Pinata é um protocolo social descentralizado que redefine as interações online ao transformar o ato de comentar em uma micro-transação Web3. Ao adicionar um custo financeiro mínimo para interação, o Pinata desincentiva o trolling, a automação maliciosa e o spam, criando um ecossistema de conteúdo relevante com incentivos financeiros diretos para criadores e comunidade.
-
-O ecossistema combina transações da rede com mecanismos de SocialFi e gamificação baseados em pools de prêmios automatizados (Piñata Pools).
-=======
 
 ### 🇺🇸 - Description
 
@@ -188,4 +171,3 @@ O aplicativo simula uma experiência SocialFi onde:
 A interface utiliza um layout moderno baseado em cards, com forte ênfase em métricas de engajamento, distribuição para criadores e participação da comunidade. A UI foi projetada para transmitir a sensação de um protótipo de produto social refinado, e não de um painel técnico de blockchain. ## Notas
 
 Este projeto utiliza dados fictícios para simular fluxos de interação e apresentar o conceito do protocolo em uma demonstração de produto pronta para hackathon.
->>>>>>> 2b85836a8c8c6f3ee82af8f5f9af7402f512f3fb
