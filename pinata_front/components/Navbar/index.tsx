@@ -55,10 +55,7 @@ export const Navbar = () => {
           className="order-3 flex w-full items-center gap-1 overflow-x-auto sm:order-2 sm:w-auto"
         >
           {navigation.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href === "/profile/samirdourado" &&
-                pathname.startsWith("/profile/"));
+            const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}

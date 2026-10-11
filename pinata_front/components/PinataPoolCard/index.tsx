@@ -55,15 +55,15 @@ export const PinataPoolCard = () => {
         </div>
 
         {/* Lado Direito: Contagem Regressiva e Botão */}
-        <div className="w-full md:w-auto flex flex-col items-center gap-3 bg-background p-5 rounded-xl border border-card-border text-center">
-          <div>
+        <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-card-border bg-background p-5 text-center md:w-72">
+          <div className="w-full">
             <span className="text-xs font-medium text-muted block mb-1">
               Sorteio no primeiro dia do mês
             </span>
             <MonthlyCountdown />
           </div>
 
-          <div className="w-full md:w-auto flex items-center gap-3 bg-card p-3 rounded-xl border border-card-border">
+          <div className="flex w-full items-center gap-3 rounded-xl border border-card-border bg-card p-3">
             {/* Imagem da Piñata */}
             <Image
               alt="Pinata image"
