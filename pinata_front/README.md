@@ -1,52 +1,39 @@
-## 🛠️ Technologies Used
+# Pinata Frontend
 
-- **Core & Framework:** [Next.js](https://nextjs.org/) (App Router), [React](https://react.dev/) & [TypeScript](https://www.typescriptlang.org/)
-- **Estilização:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Otimização de Fontes:** `next/font` (Geist Font)
+This is the front-end prototype for Pinata, a Web3 social platform that monetizes quality discussion with low-cost comment participation. It is built with Next.js, React, TypeScript, and Tailwind CSS.
 
+## Stack
 
----
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+- Next.js App Router
+- React
+- TypeScript
+- Tailwind CSS v4
+- Local mock data state management
 
-## ⚙️ Getting Started
+## Features
 
-### Pré-requirements
+- Home feed and trending content
+- Paid-comment interactions
+- Vote-driven ranking
+- User and public profile views
+- Piñata Pool progress and countdown
+- Responsive social UI prototype
 
-Make sure you have **Node.js** (version 18.17 or higher) and a package manager (`npm`, `pnpm`, or `yarn`) installed on your machine.
-
-### Step by step
-
-**Clone repository:**
-
-```bash
-git clone git@github.com:samirdourado/pinata.git
-```
-
-### Instaling
-
-Install dependencies
+## Getting started
 
 ```bash
 npm install
-```
-
-## Iniciando
-
-Run develepment server:
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open http://localhost:3000.
 
+## Production build
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
 ```
+
+## Notes
+
+The app is designed as a concept demo and uses mock data to simulate the protocol behavior, social ranking, and prize distribution experience.
