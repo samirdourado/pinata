@@ -3,6 +3,12 @@ import { iComment } from "@/interface/comment";
 import { iPost } from "@/interface/post";
 import { iProfile, iProfileWinner } from "@/interface/profile";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
+import {
+  getPostPinataSol,
+  getProfilePinataSol,
+  getValidComments,
+  MIN_COMMENT_SOL,
+} from "@/utils/pinata";
 
 type Vote = "up" | "down";
 
@@ -13,9 +19,12 @@ interface SocialState {
   profileWinners: Record<string, iProfileWinner[]>;
 }
 
-const STORAGE_KEY = "pinata-social-state-v1";
+const STORAGE_KEY = "pinata-social-state-v2";
 const initialState: SocialState = {
-  posts: INITIAL_POSTS,
+  posts: INITIAL_POSTS.map((post) => ({
+    ...post,
+    pinataPoolSol: getPostPinataSol(post),
+  })),
   votes: {},
   profiles: PROFILES,
   profileWinners: PROFILE_WINNERS,
@@ -104,8 +113,23 @@ export function vote(postId: string, direction: Vote) {
 }
 
 export function addComment(postId: string, content: string) {
+  return addPaidComment(postId, content, MIN_COMMENT_SOL);
+}
+
+export function addPaidComment(
+  postId: string,
+  content: string,
+  paidAmountSol: number,
+) {
   const post = state.posts.find((item) => item.id === postId);
-  if (!post || !content.trim()) return;
+  if (
+    !post ||
+    !content.trim() ||
+    !Number.isFinite(paidAmountSol) ||
+    paidAmountSol < MIN_COMMENT_SOL
+  ) {
+    return;
+  }
 
   const author = state.profiles.find(
     (profile) => profile.handle === CURRENT_USER_HANDLE,
@@ -118,7 +142,7 @@ export function addComment(postId: string, content: string) {
     avatar:
       author?.avatar ?? "https://api.dicebear.com/7.x/bottts/svg?seed=Samir",
     content: content.trim(),
-    paidAmountSol: post.commentFeeSol,
+    paidAmountSol,
     createdAt,
     timestamp: formatRelativeTime(createdAt),
   };
@@ -130,31 +154,27 @@ export function addComment(postId: string, content: string) {
         ? {
             ...item,
             comments: [comment, ...item.comments],
-            pinataPoolSol: item.pinataPoolSol + item.commentFeeSol * 0.4,
+            pinataPoolSol: getPostPinataSol({
+              ...item,
+              comments: [comment, ...item.comments],
+            }),
           }
         : item,
-    ),
-    profiles: state.profiles.map((profile) =>
-      profile.handle === post.handle
-        ? {
-            ...profile,
-            pinataBalanceSol:
-              profile.pinataBalanceSol + post.commentFeeSol * 0.4,
-          }
-        : profile,
     ),
   });
 }
 
 export function popProfilePinata(handle: string) {
   const profile = state.profiles.find((item) => item.handle === handle);
-  if (!profile || profile.pinataBalanceSol < profile.pinataTargetSol * 0.6) {
-    return null;
-  }
+  if (!profile) return null;
+  const balanceSol = getProfilePinataSol(profile, state.posts);
+  if (balanceSol < profile.pinataTargetSol * 0.6) return null;
 
-  const eligibleCommenters = state.posts
-    .filter((post) => post.handle === handle)
-    .flatMap((post) => post.comments)
+  const eligibleCommenters = getValidComments(
+    state.posts,
+    handle,
+    profile.pinataStartedAt,
+  )
     .filter((comment) => {
       const commenterHandle =
         comment.handle ??
@@ -174,14 +194,16 @@ export function popProfilePinata(handle: string) {
     name: winnerProfile?.name ?? winnerComment.author,
     handle: winnerProfile?.handle ?? winnerComment.handle ?? "comentarista",
     avatar: winnerProfile?.avatar ?? winnerComment.avatar,
-    prizeSol: profile.pinataBalanceSol,
+    prizeSol: balanceSol,
     createdAt: new Date().toISOString(),
   };
 
   publish({
     ...state,
     profiles: state.profiles.map((item) =>
-      item.handle === handle ? { ...item, pinataBalanceSol: 0 } : item,
+      item.handle === handle
+        ? { ...item, pinataStartedAt: winner.createdAt }
+        : item,
     ),
     profileWinners: {
       ...state.profileWinners,

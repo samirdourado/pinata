@@ -2,7 +2,7 @@
 
 import { ReactNode, useSyncExternalStore } from "react";
 import {
-  addComment,
+  addPaidComment,
   getInitialSocialSnapshot,
   getSocialSnapshot,
   popProfilePinata,
@@ -21,5 +21,5 @@ export function useSocial() {
     getInitialSocialSnapshot,
   );
 
-  return { ...state, addComment, popProfilePinata, vote };
+  return { ...state, addPaidComment, popProfilePinata, vote };
 }

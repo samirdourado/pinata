@@ -79,7 +79,7 @@ export const PostDetailModal = ({
           </div>
           <div className="mt-6 space-y-3">
             <div className="text-xs font-semibold text-primary">
-              {post.commentFeeSol} SOL por comentário
+              Valor livre · mínimo de 0,005 SOL por comentário
             </div>
             <PostActions post={post} />
           </div>

@@ -42,7 +42,7 @@ export const PostCard = ({ post: fallbackPost }: PostCardProps) => {
           </div>
         </div>
         <span className="shrink-0 rounded-md border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-          {post.commentFeeSol} SOL / comentário
+          Comentário livre · mín. 0,005 SOL
         </span>
       </div>
 

@@ -3,15 +3,20 @@
 import { FormEvent, useState } from "react";
 import { useSocial } from "@/components/SocialProvider";
 import { iPost } from "@/interface/post";
+import { MIN_COMMENT_SOL } from "@/utils/pinata";
 
 export const PostComposer = ({ post }: { post: iPost }) => {
   const [content, setContent] = useState("");
-  const { addComment } = useSocial();
+  const [amount, setAmount] = useState(post.commentFeeSol.toString());
+  const { addPaidComment } = useSocial();
+  const amountSol = Number(amount);
+  const isValidAmount =
+    Number.isFinite(amountSol) && amountSol >= MIN_COMMENT_SOL;
 
   const submitComment = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!content.trim()) return;
-    addComment(post.id, content);
+    if (!content.trim() || !isValidAmount) return;
+    addPaidComment(post.id, content, amountSol);
     setContent("");
   };
 
@@ -26,17 +31,34 @@ export const PostComposer = ({ post }: { post: iPost }) => {
           aria-label="Novo comentário"
           className="min-w-0 flex-1 rounded-xl border border-card-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted focus:border-primary focus:outline-none"
         />
+        <label className="flex items-center gap-2 rounded-xl border border-card-border bg-background px-3 text-xs text-muted">
+          SOL
+          <input
+            type="number"
+            min={MIN_COMMENT_SOL}
+            step="0.001"
+            value={amount}
+            onChange={(event) => setAmount(event.target.value)}
+            aria-label="Valor do comentário em SOL"
+            className="w-24 bg-transparent py-2.5 text-sm font-semibold text-foreground outline-none"
+          />
+        </label>
         <button
           type="submit"
-          disabled={!content.trim()}
+          disabled={!content.trim() || !isValidAmount}
           className="flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <span>Comentar</span>
+          <span>Pagar & comentar</span>
           <span className="rounded bg-black/20 px-1.5 py-0.5 text-[10px]">
-            {post.commentFeeSol} SOL
+            {isValidAmount ? amountSol : MIN_COMMENT_SOL} SOL
           </span>
         </button>
       </div>
+      {amount.length > 0 && !isValidAmount && (
+        <p className="mt-2 text-xs text-red-500">
+          O valor mínimo por comentário é {MIN_COMMENT_SOL} SOL.
+        </p>
+      )}
     </form>
   );
 };

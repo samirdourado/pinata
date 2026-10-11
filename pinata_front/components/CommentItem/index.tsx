@@ -1,24 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { RelativeTime } from "@/components/RelativeTime";
 import { iComment } from "@/interface/comment";
-import { formatRelativeTime } from "@/utils/formatRelativeTime";
 
 export const CommentItem = ({ comment }: { comment: iComment }) => {
-  const [timestamp, setTimestamp] = useState(() =>
-    comment.createdAt
-      ? formatRelativeTime(comment.createdAt)
-      : comment.timestamp,
-  );
-
-  useEffect(() => {
-    if (!comment.createdAt) return;
-    const updateTimestamp = () =>
-      setTimestamp(formatRelativeTime(comment.createdAt!));
-    const interval = window.setInterval(updateTimestamp, 60_000);
-    return () => window.clearInterval(interval);
-  }, [comment.createdAt]);
-
   return (
     <article className="rounded-xl border border-card-border bg-background p-3.5">
       <div className="flex items-start gap-2.5">
@@ -32,7 +17,11 @@ export const CommentItem = ({ comment }: { comment: iComment }) => {
             <span className="text-xs font-bold text-foreground">
               {comment.author}
             </span>
-            <time className="text-[10px] text-muted">{timestamp}</time>
+            <RelativeTime
+              value={comment.createdAt ?? comment.timestamp}
+              fallback={comment.timestamp}
+              className="text-[10px] text-muted"
+            />
           </div>
           <p className="mt-1.5 whitespace-pre-wrap wrap-break-word text-xs leading-relaxed text-foreground">
             {comment.content}

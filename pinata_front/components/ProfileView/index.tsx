@@ -4,11 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
+import { PostDetailModal } from "@/components/PostDetailModal";
 import { PinataProgress } from "@/components/PinataProgress";
+import { RelativeTime } from "@/components/RelativeTime";
 import { useSocial } from "@/components/SocialProvider";
 import { CURRENT_USER_HANDLE } from "@/data/mockData";
+import { iPost } from "@/interface/post";
 import { iProfile, iProfileWinner } from "@/interface/profile";
-import { formatRelativeTime } from "@/utils/formatRelativeTime";
+import { getProfilePinataSol } from "@/utils/pinata";
 import { sortPosts } from "@/utils/sortPosts";
 
 export const ProfileView = ({
@@ -17,8 +20,10 @@ export const ProfileView = ({
   profile: iProfile;
 }) => {
   const [lastWinner, setLastWinner] = useState<iProfileWinner | null>(null);
+  const [selectedPost, setSelectedPost] = useState<iPost | null>(null);
   const {
     posts: allPosts,
+    votes,
     profiles,
     profileWinners,
     popProfilePinata,
@@ -31,12 +36,18 @@ export const ProfileView = ({
     "score",
   );
   const winners = profileWinners[profile.handle] ?? [];
+  const interactedPosts = allPosts.filter(
+    (post) =>
+      post.comments.some((comment) => comment.handle === profile.handle) ||
+      (profile.handle === CURRENT_USER_HANDLE && Boolean(votes[post.id])),
+  );
   const isOwnProfile = profile.handle === CURRENT_USER_HANDLE;
+  const balanceSol = getProfilePinataSol(profile, allPosts);
   const balancePercent = Math.min(
-    (profile.pinataBalanceSol / profile.pinataTargetSol) * 100,
+    (balanceSol / profile.pinataTargetSol) * 100,
     100,
   );
-  const canPop = profile.pinataBalanceSol >= profile.pinataTargetSol * 0.6;
+  const canPop = balanceSol >= profile.pinataTargetSol * 0.6;
   const percentToMinimum = Math.max(0, Math.ceil(60 - balancePercent));
 
   const handlePopPinata = () => {
@@ -78,12 +89,12 @@ export const ProfileView = ({
                 <div className="flex items-center justify-between gap-2 text-xs font-semibold">
                   <span className="text-foreground">Piñata do usuário</span>
                   <span className="shrink-0 text-primary">
-                    {profile.pinataBalanceSol.toFixed(2)} /{" "}
+                    {balanceSol.toFixed(2)} /{" "}
                     {profile.pinataTargetSol.toFixed(2)} SOL
                   </span>
                 </div>
                 <PinataProgress
-                  valueSol={profile.pinataBalanceSol}
+                  valueSol={balanceSol}
                   targetSol={profile.pinataTargetSol}
                   className="mt-2"
                 />
@@ -123,22 +134,6 @@ export const ProfileView = ({
         </div>
       </section>
 
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-lg font-bold text-foreground">Postagens</h2>
-          <span className="text-xs text-muted">
-            {posts.length} {posts.length === 1 ? "publicação" : "publicações"}
-          </span>
-        </div>
-        {posts.length ? (
-          posts.map((post) => <PostCard key={post.id} post={post} />)
-        ) : (
-          <div className="rounded-xl border border-dashed border-card-border px-5 py-10 text-center text-sm text-muted">
-            Nenhuma postagem por aqui ainda.
-          </div>
-        )}
-      </section>
-
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-lg font-bold text-foreground">
@@ -162,9 +157,11 @@ export const ProfileView = ({
                   >
                     {winner.name}
                   </Link>
-                  <time className="text-[11px] text-muted">
-                    {formatRelativeTime(winner.createdAt)}
-                  </time>
+                  <RelativeTime
+                    value={winner.createdAt}
+                    fallback="Sorteio recente"
+                    className="text-[11px] text-muted"
+                  />
                 </div>
                 <span className="text-xs font-bold text-success">
                   {winner.prizeSol.toFixed(2)} SOL
@@ -178,6 +175,72 @@ export const ProfileView = ({
           </div>
         )}
       </section>
+
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+        <section className="space-y-4 lg:col-span-2">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="text-lg font-bold text-foreground">Postagens</h2>
+            <span className="text-xs text-muted">
+              {posts.length} {posts.length === 1 ? "publicação" : "publicações"}
+            </span>
+          </div>
+          {posts.length ? (
+            posts.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <div className="rounded-xl border border-dashed border-card-border px-5 py-10 text-center text-sm text-muted">
+              Nenhuma postagem por aqui ainda.
+            </div>
+          )}
+        </section>
+
+        <aside className="space-y-3 lg:sticky lg:top-24">
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Interações</h2>
+            <p className="text-xs text-muted">
+              Publicações em que @{profile.handle} comentou ou votou
+            </p>
+          </div>
+          {interactedPosts.length ? (
+            <ul className="divide-y divide-card-border rounded-xl border border-card-border bg-card px-4">
+              {interactedPosts.map((post) => (
+                <li key={post.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPost(post)}
+                    className="w-full py-3 text-left"
+                  >
+                    <span className="block truncate text-xs font-semibold text-foreground">
+                      {post.author}
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-xs text-muted">
+                      {post.content}
+                    </span>
+                    <span className="mt-2 block text-[10px] text-primary">
+                      {
+                        post.comments.filter(
+                          (comment) => comment.handle === profile.handle,
+                        ).length
+                      }{" "}
+                      comentários · {post.likes - post.dislikes} saldo de votos
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-xl border border-dashed border-card-border p-4 text-xs text-muted">
+              Ainda não há interações registradas.
+            </div>
+          )}
+        </aside>
+      </div>
+      {selectedPost && (
+        <PostDetailModal
+          postId={selectedPost.id}
+          fallbackPost={selectedPost}
+          onClose={() => setSelectedPost(null)}
+        />
+      )}
     </main>
   );
 };

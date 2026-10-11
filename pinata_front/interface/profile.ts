@@ -4,8 +4,8 @@ export interface iProfile {
   avatar: string;
   bio: string;
   memberSince: string;
-  pinataBalanceSol: number;
   pinataTargetSol: number;
+  pinataStartedAt?: string;
 }
 
 export interface iProfileWinner {
