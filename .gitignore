@@ -1,0 +1,11 @@
+# Generated video exports
+/videos/*.mp4
+/videos/*.mov
+/videos/*.webm
+
+# Rendered captures, audio, frames, and review images
+/videos/rendered/
+
+# Python cache from the video generator
+/videos/__pycache__/
+/videos/*.py[cod]
