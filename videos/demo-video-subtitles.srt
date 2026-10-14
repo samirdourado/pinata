@@ -1,0 +1,61 @@
+1
+00:00:00,000 --> 00:00:06,500
+Welcome to our live MVP deployed on Vercel.
+Here you can explore the feed,
+create free posts, and view trending content.
+
+2
+00:00:06,500 --> 00:00:15,000
+To interact, users connect their Solana wallet,
+and in this prototype we simulate the wallet authorization flow.
+
+3
+00:00:15,000 --> 00:00:24,500
+This creates a seamless experience while preserving the core social dynamics of the product.
+
+4
+00:00:24,500 --> 00:00:33,500
+To eliminate low-effort spam and encourage meaningful conversations,
+posting a comment triggers a micro-fee.
+
+5
+00:00:33,500 --> 00:00:43,500
+In this prototype build, we simulate the fee split logic:
+60% goes directly to the creator's wallet,
+40% feeds the Creator Piñata pool.
+
+6
+00:00:43,500 --> 00:00:53,500
+The remainder supports platform maintenance
+and the monthly Platform Piñata.
+
+7
+00:00:53,500 --> 00:01:03,500
+Here on the creator profile,
+you can see the Creator Piñata progress.
+
+8
+00:01:03,500 --> 00:01:14,000
+Once it reaches at least 50% of its goal,
+the creator can trigger the Pop action.
+
+9
+00:01:14,000 --> 00:01:25,000
+This distributes accumulated rewards exclusively
+to users who commented after the current Piñata was created.
+
+10
+00:01:25,000 --> 00:01:35,000
+This creates a continuous loop of community engagement
+and stronger participation.
+
+11
+00:01:35,000 --> 00:01:48,000
+All core UI and UX flows,
+plus the state management logic,
+are fully operational in this Vercel deployment.
+
+12
+00:01:48,000 --> 00:01:58,000
+This sets up a strong foundation
+for on-chain smart contract integration on Solana Devnet.
