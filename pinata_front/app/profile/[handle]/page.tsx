@@ -1,36 +1,40 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
 import { ProfileView } from "@/components/ProfileView";
-import { PROFILES } from "@/data/mockData";
-
-async function PublicProfileContent({
-  params,
-}: {
-  params: Promise<{ handle: string }>;
-}) {
-  const { handle } = await params;
-  const profile = PROFILES.find((entry) => entry.handle === handle);
-
-  if (!profile) notFound();
-
-  return <ProfileView profile={profile} />;
-}
-
-function ProfileFallback() {
-  return (
-    <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:px-8 xl:px-0">
-      <div className="h-40 animate-pulse rounded-2xl border border-card-border bg-card" />
-      <div className="h-64 animate-pulse rounded-2xl border border-card-border bg-card" />
-    </main>
-  );
-}
+import { useAuth } from "@/components/AuthProvider";
+import { useSocial } from "@/components/SocialProvider";
 
 export default function PublicProfilePage(
   props: PageProps<"/profile/[handle]">,
 ) {
-  return (
-    <Suspense fallback={<ProfileFallback />}>
-      <PublicProfileContent params={props.params} />
-    </Suspense>
-  );
+  const { handle } = use(props.params);
+  const { isReady } = useAuth();
+  const { profiles } = useSocial();
+  const profile = profiles.find((entry) => entry.handle === handle);
+
+  if (!isReady) {
+    return (
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-8">
+        <p role="status" className="text-sm text-muted">
+          Loading profile...
+        </p>
+      </main>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 text-center sm:px-8">
+        <h1 className="text-2xl font-black text-foreground">
+          Profile not found
+        </h1>
+        <p className="mt-2 text-sm text-muted">
+          This profile is not available in the local prototype.
+        </p>
+      </main>
+    );
+  }
+
+  return <ProfileView profile={profile} />;
 }
