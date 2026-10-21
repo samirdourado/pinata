@@ -1,47 +1,185 @@
 # Demo Video Script (English)
 
-## Duration: 2:30 to 3:00
+Video: `demo-video-en.mp4` (about 2:45). Narration and subtitles in English: [`demo-video-en.srt`](demo-video-en.srt).
 
-### 0:00 - 0:50 | App Navigation and Feed Overview
+> Prototype status: wallet connection and all SOL payments are **simulated** in the frontend. Accounts and activity are stored in the browser's `localStorage`. No transaction is sent to Solana yet.
 
-Narration:
+## Welcome
 
-"Welcome to our live MVP deployed on Vercel. Here you can explore the feed, create free posts, and view trending content based on community likes and dislikes. To interact, users connect their Solana wallet, and in this prototype we simulate the wallet authorization flow to create a seamless experience."
+*Screen: `guest-home.png`*
 
-### 0:50 - 1:40 | Paid Comment Flow (Simulated)
+This is Pinata, live on Vercel. Before signing in, visitors can see the Piñata Pool, the trending posts, and how the protocol works. A note up front: this is a frontend prototype. The wallet and all SOL amounts are simulated, and nothing is sent on-chain yet.
 
-Narration:
+## New: accounts
 
-"To eliminate low-effort spam and encourage meaningful conversations, posting a comment triggers a micro-fee. In this prototype build, we simulate the fee split logic: 60% of the fee goes directly to the creator's wallet, 40% feeds the Creator Piñata pool, and the remainder supports platform maintenance and the monthly Platform Piñata."
+*Screen: `register-filled.png`*
 
-### 1:40 - 2:30 | Creator Piñata Mechanics and 'Pop' Action
+New in this version: account registration. Maria enters a name, username, email, optional bio, and a six to twelve character password, all validated with Zod.
 
-Narration:
+*Screen: `home.png`*
 
-"Here on the creator profile, you can see the Creator Piñata progress. Once it reaches at least 50% of its goal, the creator can trigger the 'Pop' action. This distributes accumulated rewards exclusively to users who commented after the current Piñata was created, creating a continuous loop of community engagement."
+After signing up, she lands on the feed with the full navigation: Home, Trending Posts, Profile, Dashboard, and Notifications.
 
-### 2:30 - 3:00 | Conclusion and Roadmap
+## Simulated wallet
 
-Narration:
+*Screen: `wallet.png`*
 
-"All core UI and UX flows, plus the state management logic, are fully operational in this Vercel deployment, setting up a strong foundation for on-chain smart contract integration on Solana Devnet."
+Connect Wallet simulates a Solana wallet session, with a sample address and balance.
 
-## Demo steps to record on screen
+## Feed and votes
 
-1. Open the Vercel app.
-2. Show the homepage feed and the trending section.
-3. Navigate to the profile page and show the Piñata progress bar.
-4. Click to create a post and show the new item in the feed.
-5. Open a post and add a paid comment.
-6. Confirm the comment appears immediately under the post.
-7. Go to the creator profile and trigger the Piñata pop action.
-8. End with a clean, responsive feed and interface shot.
+*Screen: `trending.png`*
 
-## Suggested on-screen captions
+Trending Posts ranks the feed by vote balance, and upvotes and downvotes stay in sync across every view.
 
-- "Live MVP on Vercel"
-- "Trending posts ranked by engagement"
-- "Free post creation"
-- "Micro-fee for high-quality comments"
-- "Creator Piñata unlocks at 50%"
-- "Prepared for Solana smart contract integration"
+*Screen: `post-detail.png`*
+
+Opening a post shows the full discussion. Each comment shows the value paid, and the post shows what it added to the Piñata.
+
+## Free posts
+
+*Screen: `creator-compose.png`*
+
+On her profile, Maria publishes a new post for free.
+
+*Screen: `creator-post.png`*
+
+The post shows up right away on her profile and in the feed.
+
+## Paid comments
+
+*Screen: `composer.png`*
+
+Now Lucas, a second user, comments on it. He picks the value, minimum 0.005 SOL, and pays a simulated 1.5 SOL.
+
+*Screen: `comment-posted.png`*
+
+The comment appears instantly, and forty percent of its value, 0.6 SOL, flows into Maria's creator Piñata.
+
+## Dashboard
+
+*Screen: `dashboard-commenter.png`*
+
+Lucas's dashboard tracks his published posts, paid comments, and total comment value.
+
+## Sign in
+
+*Screen: `login-filled.png`*
+
+Maria signs back in with her email or username. Passwords are stored as salted PBKDF2 hashes, and the session persists in local storage.
+
+## Creator Piñata
+
+*Screen: `dashboard.png`*
+
+Her Piñata now holds 0.6 of 1 SOL. That reaches the sixty percent threshold, so the Burst button unlocks.
+
+*Screen: `dashboard-burst.png`*
+
+She bursts the Piñata. An eligible commenter from this round is drawn, and Lucas receives 0.6 SOL. The draw is saved under Recent rewards, and a new round begins.
+
+## Persistence
+
+*Screen: `creator.png`*
+
+Everything survives a page refresh: accounts, posts, votes, comments, and Piñata history.
+
+## Next on Solana
+
+*Screen: `home.png`*
+
+Next on Solana: the wallet adapter for real signatures, an Anchor program holding fees and Piñatas in PDAs on Devnet, and verifiable randomness for the draws.
+
+---
+
+# Roteiro do Vídeo de Demo (pt-BR)
+
+Vídeo: `demo-video-pt-BR.mp4` (cerca de 2:40). Narração e legendas em português: [`demo-video-pt-BR.srt`](demo-video-pt-BR.srt).
+
+> Status do protótipo: a conexão de carteira e todos os pagamentos em SOL são **simulados** no frontend. Contas e atividade ficam no `localStorage` do navegador. Nenhuma transação é enviada para a Solana ainda.
+
+## Boas-vindas
+
+*Tela: `guest-home.png`*
+
+Este é o Pinata, no ar na Vercel. Antes de entrar, o visitante vê o Piñata Pool, os posts em alta e como o protocolo funciona. Um aviso logo de início: este é um protótipo de frontend. A carteira e todos os valores em SOL são simulados, e nada é enviado on-chain ainda.
+
+## Novo: contas
+
+*Tela: `register-filled.png`*
+
+Novidade desta versão: cadastro de conta. A Maria informa nome, username, e-mail, bio opcional e uma senha de seis a doze caracteres, tudo validado com Zod.
+
+*Tela: `home.png`*
+
+Depois do cadastro, ela chega ao feed com a navegação completa: Home, Trending Posts, Perfil, Dashboard e Notificações.
+
+## Carteira simulada
+
+*Tela: `wallet.png`*
+
+O botão Connect Wallet simula uma sessão de carteira Solana, com endereço e saldo de exemplo.
+
+## Feed e votos
+
+*Tela: `trending.png`*
+
+Trending Posts ordena o feed pelo saldo de votos, e os votos positivos e negativos ficam sincronizados em todas as telas.
+
+*Tela: `post-detail.png`*
+
+Ao abrir um post vemos a discussão completa. Cada comentário mostra o valor pago, e o post mostra quanto somou à Piñata.
+
+## Posts grátis
+
+*Tela: `creator-compose.png`*
+
+No perfil, a Maria publica um novo post, de graça.
+
+*Tela: `creator-post.png`*
+
+O post aparece na hora no perfil dela e no feed.
+
+## Comentários pagos
+
+*Tela: `composer.png`*
+
+Agora o Lucas, um segundo usuário, comenta. Ele escolhe o valor, mínimo de 0,005 SOL, e paga 1,5 SOL simulados.
+
+*Tela: `comment-posted.png`*
+
+O comentário aparece na hora, e quarenta por cento do valor, 0,6 SOL, vai para a Piñata de criadora da Maria.
+
+## Dashboard
+
+*Tela: `dashboard-commenter.png`*
+
+O dashboard do Lucas acompanha posts publicados, comentários pagos e o valor total dos comentários.
+
+## Login
+
+*Tela: `login-filled.png`*
+
+A Maria entra de novo com e-mail ou username. As senhas são guardadas como hashes PBKDF2 com salt, e a sessão persiste no localStorage.
+
+## Piñata do criador
+
+*Tela: `dashboard.png`*
+
+A Piñata dela agora tem 0,6 de 1 SOL. Isso atinge o limite de sessenta por cento, e o botão Burst é liberado.
+
+*Tela: `dashboard-burst.png`*
+
+Ela estoura a Piñata. Um comentarista elegível desta rodada é sorteado, e o Lucas recebe 0,6 SOL. O sorteio fica registrado em Recent rewards, e uma nova rodada começa.
+
+## Persistência
+
+*Tela: `creator.png`*
+
+Tudo continua após recarregar a página: contas, posts, votos, comentários e o histórico da Piñata.
+
+## Próximo passo na Solana
+
+*Tela: `home.png`*
+
+Próximo passo na Solana: wallet adapter para assinaturas reais, um programa Anchor guardando taxas e Piñatas em PDAs na Devnet, e aleatoriedade verificável nos sorteios.

@@ -1,0 +1,83 @@
+1
+00:00:05,000 --> 00:00:08,100
+Este é o Pinata, no ar na Vercel.
+
+2
+00:00:08,190 --> 00:00:14,810
+Antes de entrar, o visitante vê o Piñata Pool, os posts em alta e como o protocolo funciona.
+
+3
+00:00:14,900 --> 00:00:24,450
+Um aviso logo de início: este é um protótipo de frontend. A carteira e todos os valores em SOL são simulados, e nada é enviado on-chain ainda.
+
+4
+00:00:24,540 --> 00:00:28,500
+Novidade desta versão: cadastro de conta.
+
+5
+00:00:28,590 --> 00:00:36,610
+A Maria informa nome, username, e-mail, bio opcional e uma senha de seis a doze caracteres, tudo validado com Zod.
+
+6
+00:00:36,700 --> 00:00:45,080
+Depois do cadastro, ela chega ao feed com a navegação completa: Home, Trending Posts, Perfil, Dashboard e Notificações.
+
+7
+00:00:45,170 --> 00:00:51,600
+O botão Connect Wallet simula uma sessão de carteira Solana, com endereço e saldo de exemplo.
+
+8
+00:00:51,690 --> 00:01:00,210
+Trending Posts ordena o feed pelo saldo de votos, e os votos positivos e negativos ficam sincronizados em todas as telas.
+
+9
+00:01:00,300 --> 00:01:08,580
+Ao abrir um post vemos a discussão completa. Cada comentário mostra o valor pago, e o post mostra quanto somou à Piñata.
+
+10
+00:01:08,670 --> 00:01:12,890
+No perfil, a Maria publica um novo post, de graça.
+
+11
+00:01:12,980 --> 00:01:16,990
+O post aparece na hora no perfil dela e no feed.
+
+12
+00:01:17,080 --> 00:01:27,300
+Agora o Lucas, um segundo usuário, comenta. Ele escolhe o valor, mínimo de 0,005 SOL, e paga 1,5 SOL simulados.
+
+13
+00:01:27,390 --> 00:01:35,240
+O comentário aparece na hora, e quarenta por cento do valor, 0,6 SOL, vai para a Piñata de criadora da Maria.
+
+14
+00:01:35,330 --> 00:01:42,270
+O dashboard do Lucas acompanha posts publicados, comentários pagos e o valor total dos comentários.
+
+15
+00:01:42,360 --> 00:01:46,180
+A Maria entra de novo com e-mail ou username.
+
+16
+00:01:46,270 --> 00:01:53,330
+As senhas são guardadas como hashes PBKDF2 com salt, e a sessão persiste no localStorage.
+
+17
+00:01:53,420 --> 00:02:01,630
+A Piñata dela agora tem 0,6 de 1 SOL. Isso atinge o limite de sessenta por cento, e o botão Burst é liberado.
+
+18
+00:02:01,720 --> 00:02:09,520
+Ela estoura a Piñata. Um comentarista elegível desta rodada é sorteado, e o Lucas recebe 0,6 SOL.
+
+19
+00:02:09,610 --> 00:02:15,060
+O sorteio fica registrado em Recent rewards, e uma nova rodada começa.
+
+20
+00:02:15,150 --> 00:02:21,920
+Tudo continua após recarregar a página: contas, posts, votos, comentários e o histórico da Piñata.
+
+21
+00:02:22,010 --> 00:02:33,190
+Próximo passo na Solana: wallet adapter para assinaturas reais, um programa Anchor guardando taxas e Piñatas em PDAs na Devnet, e aleatoriedade verificável nos sorteios.
