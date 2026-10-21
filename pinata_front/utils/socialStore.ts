@@ -2,6 +2,7 @@ import { INITIAL_POSTS, PROFILE_WINNERS, PROFILES, CURRENT_USER_HANDLE } from "@
 import { iComment } from "@/interface/comment";
 import { iPost } from "@/interface/post";
 import { iProfile, iProfileWinner } from "@/interface/profile";
+import { authUserToProfile, getStoredAuthUser } from "@/utils/authStore";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import {
   getPostPinataSol,
@@ -20,6 +21,7 @@ interface SocialState {
 }
 
 const STORAGE_KEY = "pinata-social-state-v2";
+
 const initialState: SocialState = {
   posts: INITIAL_POSTS.map((post) => ({
     ...post,
@@ -54,10 +56,91 @@ const listeners = new Set<() => void>();
 function publish(nextState: SocialState) {
   state = nextState;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.localStorage.setItem(STORAGE_KEY! , JSON.stringify(state));
   } catch {
   }
   listeners.forEach((listener) => listener());
+}
+
+export function upsertProfile(profile: iProfile) {
+  const existing = state.profiles.find((item) => item.handle === profile.handle);
+  if (
+    existing &&
+    existing.name === profile.name &&
+    existing.avatar === profile.avatar &&
+    existing.bio === profile.bio &&
+    existing.memberSince === profile.memberSince
+  ) {
+    return;
+  }
+
+  publish({
+    ...state,
+    profiles: existing
+      ? state.profiles.map((item) =>
+          item.handle === profile.handle
+            ? { ...profile, pinataStartedAt: item.pinataStartedAt }
+            : item,
+        )
+      : [...state.profiles, profile],
+  });
+}
+
+export function updateSocialProfile(profile: iProfile, previousHandle: string) {
+  const previousProfile = state.profiles.find(
+    (item) => item.handle === previousHandle,
+  );
+  const profiles = state.profiles.filter(
+    (item) => item.handle !== previousHandle && item.handle !== profile.handle,
+  );
+  const profileWinners: Record<string, iProfileWinner[]> = {};
+
+  for (const [handle, winners] of Object.entries(state.profileWinners)) {
+    profileWinners[handle === previousHandle ? profile.handle : handle] =
+      winners.map((winner) =>
+        winner.handle === previousHandle
+          ? { ...winner, handle: profile.handle, name: profile.name, avatar: profile.avatar }
+          : winner,
+      );
+  }
+
+  publish({
+    ...state,
+    profiles: [
+      ...profiles,
+      {
+        ...profile,
+        pinataStartedAt: previousProfile?.pinataStartedAt,
+      },
+    ],
+    posts: state.posts.map((post) => ({
+      ...post,
+      ...(post.handle === previousHandle
+        ? { handle: profile.handle, author: profile.name, avatar: profile.avatar }
+        : {}),
+      comments: post.comments.map((comment) =>
+        comment.handle === previousHandle
+          ? {
+              ...comment,
+              handle: profile.handle,
+              author: profile.name,
+              avatar: profile.avatar,
+            }
+          : comment,
+      ),
+    })),
+    profileWinners,
+  });
+}
+
+function getCurrentAuthor() {
+  const user = getStoredAuthUser();
+  const handle = user?.username ?? CURRENT_USER_HANDLE;
+  const profile = state.profiles.find((item) => item.handle === handle);
+  return {
+    handle,
+    profile: profile ?? (user ? authUserToProfile(user) : undefined),
+  };
 }
 
 export function getSocialSnapshot() {
@@ -115,14 +198,12 @@ export function createPost(content: string) {
   const trimmedContent = content.trim();
   if (!trimmedContent) return;
 
-  const author = state.profiles.find(
-    (profile) => profile.handle === CURRENT_USER_HANDLE,
-  );
+  const { handle, profile: author } = getCurrentAuthor();
   const createdAt = new Date().toISOString();
   const newPost: iPost = {
     id: `post-${crypto.randomUUID()}`,
     author: author?.name ?? "Samir Dourado",
-    handle: CURRENT_USER_HANDLE,
+    handle,
     avatar:
       author?.avatar ?? "https://api.dicebear.com/7.x/bottts/svg?seed=Samir",
     content: trimmedContent,
@@ -160,14 +241,12 @@ export function addPaidComment(
     return;
   }
 
-  const author = state.profiles.find(
-    (profile) => profile.handle === CURRENT_USER_HANDLE,
-  );
+  const { handle, profile: author } = getCurrentAuthor();
   const createdAt = new Date().toISOString();
   const comment: iComment = {
     id: `comment-${crypto.randomUUID()}`,
     author: author?.name ?? "Samir Dourado",
-    handle: CURRENT_USER_HANDLE,
+    handle,
     avatar:
       author?.avatar ?? "https://api.dicebear.com/7.x/bottts/svg?seed=Samir",
     content: content.trim(),
