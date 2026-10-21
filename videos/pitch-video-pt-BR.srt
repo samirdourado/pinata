@@ -1,0 +1,99 @@
+1
+00:00:05,000 --> 00:00:10,500
+As redes sociais estão afogadas em spam, bots e respostas sem esforço.
+
+2
+00:00:10,590 --> 00:00:14,360
+Comentar é de graça, então o ruído também é.
+
+3
+00:00:14,450 --> 00:00:20,350
+Criadores geram todo o engajamento, mas as plataformas ficam com quase todo o valor.
+
+4
+00:00:20,440 --> 00:00:25,260
+Quem começa as melhores conversas raramente é recompensado por isso.
+
+5
+00:00:25,350 --> 00:00:29,690
+Pinata é um protocolo SocialFi projetado para a Solana.
+
+6
+00:00:29,780 --> 00:00:37,410
+Publicar é grátis, mas cada comentário público tem uma pequena taxa, a partir de 0,005 SOL.
+
+7
+00:00:37,500 --> 00:00:44,340
+Esse custo pequeno filtra spam e bots, e transforma cada resposta em uma ação deliberada e relevante.
+
+8
+00:00:44,430 --> 00:00:51,460
+Cada taxa é dividida entre o criador, a plataforma e a Piñata do criador, que recebe quarenta por cento.
+
+9
+00:00:51,550 --> 00:00:56,420
+A Piñata é um prêmio gamificado presente no perfil de cada criador.
+
+10
+00:00:56,510 --> 00:01:01,650
+Quando ela atinge sessenta por cento da meta, o criador pode estourá-la.
+
+11
+00:01:01,740 --> 00:01:06,350
+O prêmio vai para um membro da comunidade que comentou naquela rodada.
+
+12
+00:01:06,440 --> 00:01:15,420
+Além disso, um Piñata Pool de toda a plataforma, financiado pelas taxas do protocolo, faz um sorteio mensal entre comentaristas ativos.
+
+13
+00:01:15,510 --> 00:01:22,830
+Criadores ganham com a conversa, comentaristas são recompensados por participar, e a qualidade vence o volume.
+
+14
+00:01:22,920 --> 00:01:26,280
+Nosso MVP está no ar na Vercel.
+
+15
+00:01:26,370 --> 00:01:34,940
+Desde a primeira submissão, adicionamos cadastro de conta, login, um dashboard pessoal e atividade que persiste no navegador.
+
+16
+00:01:35,030 --> 00:01:41,200
+Para deixar claro: a conexão de carteira e os pagamentos em SOL são simulados hoje.
+
+17
+00:01:41,290 --> 00:01:47,870
+Nenhuma transação toca a blockchain ainda, assim validamos primeiro a experiência completa do usuário.
+
+18
+00:01:47,960 --> 00:01:53,140
+O próximo passo é conectar carteiras Solana reais pelo wallet adapter.
+
+19
+00:01:53,230 --> 00:02:01,100
+Taxas e Piñatas passam para um programa Anchor com PDAs na Devnet, com aleatoriedade verificável para sorteios justos.
+
+20
+00:02:01,190 --> 00:02:11,940
+Construído sobre primitivas da Solana, o Pinata pode aceitar USDC ou tokens de comunidades e compartilhar comentários pagos como Blinks em qualquer lugar da web.
+
+21
+00:02:12,030 --> 00:02:19,930
+Começamos pelas comunidades cripto do Brasil, com a Superteam Brasil, trazendo criadores que já têm audiências engajadas.
+
+22
+00:02:20,020 --> 00:02:24,510
+Depois expandimos para criadores de toda a América Latina.
+
+23
+00:02:24,600 --> 00:02:32,830
+A receita vem de uma pequena parte do protocolo em cada comentário pago, então o Pinata só cresce quando as conversas geram valor.
+
+24
+00:02:32,920 --> 00:02:38,060
+O Pinata transforma comentários em valor para criadores e comunidades.
+
+25
+00:02:38,150 --> 00:02:42,730
+Venha construir com a gente uma camada social melhor na Solana.

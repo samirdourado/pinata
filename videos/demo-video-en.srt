@@ -1,0 +1,83 @@
+1
+00:00:05,000 --> 00:00:08,430
+This is Pinata, live on Vercel.
+
+2
+00:00:08,520 --> 00:00:15,430
+Before signing in, visitors can see the Piñata Pool, the trending posts, and how the protocol works.
+
+3
+00:00:15,520 --> 00:00:25,100
+A note up front: this is a frontend prototype. The wallet and all SOL amounts are simulated, and nothing is sent on-chain yet.
+
+4
+00:00:25,190 --> 00:00:28,890
+New in this version: account registration.
+
+5
+00:00:28,980 --> 00:00:37,520
+Maria enters a name, username, email, optional bio, and a six to twelve character password, all validated with Zod.
+
+6
+00:00:37,610 --> 00:00:46,710
+After signing up, she lands on the feed with the full navigation: Home, Trending Posts, Profile, Dashboard, and Notifications.
+
+7
+00:00:46,800 --> 00:00:52,700
+Connect Wallet simulates a Solana wallet session, with a sample address and balance.
+
+8
+00:00:52,790 --> 00:01:00,160
+Trending Posts ranks the feed by vote balance, and upvotes and downvotes stay in sync across every view.
+
+9
+00:01:00,250 --> 00:01:09,030
+Opening a post shows the full discussion. Each comment shows the value paid, and the post shows what it added to the Piñata.
+
+10
+00:01:09,120 --> 00:01:13,630
+On her profile, Maria publishes a new post for free.
+
+11
+00:01:13,720 --> 00:01:18,110
+The post shows up right away on her profile and in the feed.
+
+12
+00:01:18,200 --> 00:01:29,770
+Now Lucas, a second user, comments on it. He picks the value, minimum 0.005 SOL, and pays a simulated 1.5 SOL.
+
+13
+00:01:29,860 --> 00:01:38,810
+The comment appears instantly, and forty percent of its value, 0.6 SOL, flows into Maria's creator Piñata.
+
+14
+00:01:38,900 --> 00:01:45,260
+Lucas's dashboard tracks his published posts, paid comments, and total comment value.
+
+15
+00:01:45,350 --> 00:01:49,430
+Maria signs back in with her email or username.
+
+16
+00:01:49,520 --> 00:01:56,500
+Passwords are stored as salted PBKDF2 hashes, and the session persists in local storage.
+
+17
+00:01:56,590 --> 00:02:05,690
+Her Piñata now holds 0.6 of 1 SOL. That reaches the sixty percent threshold, so the Burst button unlocks.
+
+18
+00:02:05,780 --> 00:02:14,540
+She bursts the Piñata. An eligible commenter from this round is drawn, and Lucas receives 0.6 SOL.
+
+19
+00:02:14,630 --> 00:02:19,570
+The draw is saved under Recent rewards, and a new round begins.
+
+20
+00:02:19,660 --> 00:02:26,910
+Everything survives a page refresh: accounts, posts, votes, comments, and Piñata history.
+
+21
+00:02:27,000 --> 00:02:38,420
+Next on Solana: the wallet adapter for real signatures, an Anchor program holding fees and Piñatas in PDAs on Devnet, and verifiable randomness for the draws.

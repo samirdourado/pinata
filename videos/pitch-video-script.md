@@ -1,42 +1,141 @@
 # Pitch Video Script (English)
 
-## Duration: 2:30 to 3:00
+Video: `pitch-video-en.mp4` (about 2:45). Narration and subtitles in English: [`pitch-video-en.srt`](pitch-video-en.srt).
 
-### 0:00 - 0:40 | The Problem
+> Prototype status: wallet connection and all SOL payments are **simulated** in the frontend. Accounts and activity are stored in the browser's `localStorage`. No transaction is sent to Solana yet.
 
-Narration:
+## The problem
 
-"Social media platforms today struggle with spam, low-quality comments, and predatory algorithms. Creators bring all the engagement, but platform owners capture almost all the monetization. At the same time, users leave generic comments just to chase attention without adding real value."
+*Screen: `guest-home.png`*
 
-### 0:40 - 1:20 | The Solution and Core Concept
+Social feeds are drowning in spam, bots, and low-effort replies. Commenting is free, so noise is free too. Creators generate all of the engagement, but platforms capture almost all of the value. The people who start the best conversations rarely get paid for them.
 
-Narration:
+## The solution
 
-"Introducing Pinata, a decentralized social platform built on Solana. We align incentives between creators and followers by introducing micro-transactions for meaningful interactions. Posting is free, but commenting requires a small fee. This drastically reduces spam and rewards high-value engagement."
+*Screen: `home.png`*
 
-### 1:20 - 2:00 | Piñata Mechanics and Prize Pools
+Pinata is a SocialFi protocol designed for Solana. Posting is free, but every public comment carries a tiny fee, starting at five thousandths of a SOL.
 
-Narration:
+*Screen: `composer.png`*
 
-"When a user pays to comment, the fee is split between platform sustainability and the creator. To make interactions more fun and rewarding, a portion of these fees fuels two gamified prize pools called Piñatas: the Platform Piñata, funded by platform fees and drawn once a month for active users, and the Creator Piñata, accumulated on the creator's profile. Once the creator reaches 50% of the target, they can pop the Piñata and distribute the accumulated rewards to the community members who contributed to the discussion."
+That small cost filters out spam and bots, and turns every reply into a deliberate, meaningful action.
 
-### 2:00 - 2:30 | Technical Status and Roadmap
+## Piñata rewards
 
-Narration:
+*Screen: `comment-posted.png`*
 
-"For this hackathon, we built and deployed a fully functional Web MVP on Vercel, showcasing the complete end-to-end user experience. The current build demonstrates the whole UI flow using simulated wallet interactions, preparing the foundation for direct integration with Solana smart contracts and PDAs on Devnet."
+Each fee is shared between the creator, the platform, and the creator's Piñata, which receives forty percent.
 
-### 2:30 - 3:00 | Closing Statement and Vision
+*Screen: `dashboard.png`*
 
-Narration:
+The Piñata is a gamified prize pool on every creator profile. Once it reaches sixty percent of its target, the creator can burst it.
 
-"We are building a sustainable, anti-spam, and gamified social ecosystem. Check out our live frontend demo and join us in reshaping Web3 social dynamics on Solana."
+*Screen: `dashboard-burst.png`*
 
-## Suggested on-screen text
+The reward goes to a community member who commented during that round. On top of that, a platform-wide Piñata Pool, funded by protocol fees, runs a monthly draw for active commenters. Creators earn from conversation, commenters are rewarded for showing up, and quality wins over volume.
 
-- "Spam is draining social media"
-- "Micro-transactions for quality comments"
-- "Creators earn more, users engage better"
-- "Piñata rewards for meaningful participation"
-- "MVP live on Vercel"
-- "Built for Solana"
+## MVP today
+
+*Screen: `register-filled.png`*
+
+Our MVP is live on Vercel. Since our first submission, we added account registration, sign-in, a personal dashboard, and activity that persists in the browser.
+
+*Screen: `wallet.png`*
+
+To be clear: the wallet connection and SOL payments are simulated today. No transaction touches the blockchain yet, so we can validate the full user experience first.
+
+## Roadmap on Solana
+
+*Screen: `trending.png`*
+
+Next, we connect real Solana wallets through the wallet adapter. Fees and Piñatas move into an Anchor program with PDAs on Devnet, with verifiable randomness for fair draws.
+
+## Composability
+
+*Screen: `creator.png`*
+
+Built on Solana primitives, Pinata can accept USDC or community tokens, and share paid comments as Blinks anywhere on the web.
+
+## Go to market
+
+*Screen: `guest-home.png`*
+
+We start with Brazilian crypto communities through Superteam Brasil, onboarding creators who already have engaged audiences. Then we expand to creators across Latin America. Revenue comes from a small protocol share of every paid comment, so Pinata only grows when conversations create value.
+
+## The vision
+
+*Screen: `home.png`*
+
+Pinata turns comments into value for creators and communities. Help us build a better social layer on Solana.
+
+---
+
+# Roteiro do Vídeo de Pitch (pt-BR)
+
+Vídeo: `pitch-video-pt-BR.mp4` (cerca de 2:50). Narração e legendas em português: [`pitch-video-pt-BR.srt`](pitch-video-pt-BR.srt).
+
+> Status do protótipo: a conexão de carteira e todos os pagamentos em SOL são **simulados** no frontend. Contas e atividade ficam no `localStorage` do navegador. Nenhuma transação é enviada para a Solana ainda.
+
+## O problema
+
+*Tela: `guest-home.png`*
+
+As redes sociais estão afogadas em spam, bots e respostas sem esforço. Comentar é de graça, então o ruído também é. Criadores geram todo o engajamento, mas as plataformas ficam com quase todo o valor. Quem começa as melhores conversas raramente é recompensado por isso.
+
+## A solução
+
+*Tela: `home.png`*
+
+Pinata é um protocolo SocialFi projetado para a Solana. Publicar é grátis, mas cada comentário público tem uma pequena taxa, a partir de 0,005 SOL.
+
+*Tela: `composer.png`*
+
+Esse custo pequeno filtra spam e bots, e transforma cada resposta em uma ação deliberada e relevante.
+
+## Recompensas Piñata
+
+*Tela: `comment-posted.png`*
+
+Cada taxa é dividida entre o criador, a plataforma e a Piñata do criador, que recebe quarenta por cento.
+
+*Tela: `dashboard.png`*
+
+A Piñata é um prêmio gamificado presente no perfil de cada criador. Quando ela atinge sessenta por cento da meta, o criador pode estourá-la.
+
+*Tela: `dashboard-burst.png`*
+
+O prêmio vai para um membro da comunidade que comentou naquela rodada. Além disso, um Piñata Pool de toda a plataforma, financiado pelas taxas do protocolo, faz um sorteio mensal entre comentaristas ativos. Criadores ganham com a conversa, comentaristas são recompensados por participar, e a qualidade vence o volume.
+
+## MVP hoje
+
+*Tela: `register-filled.png`*
+
+Nosso MVP está no ar na Vercel. Desde a primeira submissão, adicionamos cadastro de conta, login, um dashboard pessoal e atividade que persiste no navegador.
+
+*Tela: `wallet.png`*
+
+Para deixar claro: a conexão de carteira e os pagamentos em SOL são simulados hoje. Nenhuma transação toca a blockchain ainda, assim validamos primeiro a experiência completa do usuário.
+
+## Roadmap na Solana
+
+*Tela: `trending.png`*
+
+O próximo passo é conectar carteiras Solana reais pelo wallet adapter. Taxas e Piñatas passam para um programa Anchor com PDAs na Devnet, com aleatoriedade verificável para sorteios justos.
+
+## Composabilidade
+
+*Tela: `creator.png`*
+
+Construído sobre primitivas da Solana, o Pinata pode aceitar USDC ou tokens de comunidades e compartilhar comentários pagos como Blinks em qualquer lugar da web.
+
+## Go-to-market
+
+*Tela: `guest-home.png`*
+
+Começamos pelas comunidades cripto do Brasil, com a Superteam Brasil, trazendo criadores que já têm audiências engajadas. Depois expandimos para criadores de toda a América Latina. A receita vem de uma pequena parte do protocolo em cada comentário pago, então o Pinata só cresce quando as conversas geram valor.
+
+## A visão
+
+*Tela: `home.png`*
+
+O Pinata transforma comentários em valor para criadores e comunidades. Venha construir com a gente uma camada social melhor na Solana.
