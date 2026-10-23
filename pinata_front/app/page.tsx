@@ -3,6 +3,7 @@
 import { PinataPoolCard } from "@/components/PinataPoolCard";
 import { PostCard } from "@/components/PostCard";
 import { useSocial } from "@/components/SocialProvider";
+import { WalletStatusCard } from "@/components/WalletStatusCard";
 import { RECENT_WINNERS } from "@/data/mockData";
 import { sortPosts } from "@/utils/sortPosts";
 
@@ -101,6 +102,8 @@ export default function Home() {
                 ))}
               </ul>
             </div>
+
+            <WalletStatusCard />
           </aside>
         </div>
       </main>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Navbar } from "@/components/Navbar";
+import { SolanaProvider } from "@/components/SolanaProvider";
 import { SocialProvider } from "@/components/SocialProvider";
 import "./globals.css";
 
@@ -29,18 +30,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
-          <SocialProvider>
-            <Suspense
-              fallback={
-                <div className="sticky top-0 z-50 h-17 border-b border-card-border bg-card" />
-              }
-            >
-              <Navbar />
-            </Suspense>
-            {children}
-          </SocialProvider>
-        </AuthProvider>
+        <SolanaProvider>
+          <AuthProvider>
+            <SocialProvider>
+              <Suspense
+                fallback={
+                  <div className="sticky top-0 z-50 h-17 border-b border-card-border bg-card" />
+                }
+              >
+                <Navbar />
+              </Suspense>
+              {children}
+            </SocialProvider>
+          </AuthProvider>
+        </SolanaProvider>
       </body>
     </html>
   );
