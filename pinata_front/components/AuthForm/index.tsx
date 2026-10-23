@@ -135,7 +135,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             </p>
           </div>
           <p className="relative z-10 text-xs text-slate-400">
-            Prototype experience · Wallet connection can be added later
+            Prototype experience · Connect a Solana wallet after signing in
           </p>
         </aside>
 
@@ -425,8 +425,8 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
               </Link>
             </p>
             <p className="mt-5 text-center text-xs leading-5 text-muted">
-              Prototype account data stays in this browser. Wallet connection is
-              separate and can be added later.
+              Prototype account data stays in this browser. After signing in,
+              you can connect a Solana wallet such as Phantom or Solflare.
             </p>
           </div>
         </section>

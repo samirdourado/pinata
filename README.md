@@ -17,7 +17,7 @@
 </p>
 
 > [!IMPORTANT]
-> **Prototype status: the Solana integration is simulated.** The current MVP is a Next.js frontend. "Connect Wallet" shows a sample address and balance, and every SOL amount (comment fees, Piñata balances, prizes) is calculated locally in the browser. **No wallet is connected and no transaction is sent to Solana yet.** Accounts and activity are stored in the browser's `localStorage`. The on-chain program is the next milestone (see [Roadmap](#roadmap)).
+> **Prototype status: real wallet connection, simulated payments.** The current MVP is a Next.js frontend. "Connect Wallet" connects a real Solana wallet (Phantom, Solflare, Backpack, Trust Wallet, or any other Wallet Standard wallet) through the Solana Wallet Adapter, on **Devnet**, and shows the wallet's real Devnet balance. **Comment fees, Piñata balances, and prizes are still simulated:** they are calculated locally in the browser, and the app does not request signatures or send transactions yet. Accounts and activity are stored in the browser's `localStorage`. The on-chain program is the next milestone (see [Roadmap](#roadmap)).
 
 ---
 
@@ -49,17 +49,19 @@ Creators earn from conversation, commenters are rewarded for showing up, and qua
 | Platform Piñata Pool card with monthly countdown | ✅ UI with sample data |
 | Profile editing and public profiles | ✅ Working |
 | Persistence after refresh (accounts, posts, votes, comments, Piñata history) | ✅ Working in the same browser |
-| Solana wallet connection | 🟡 **Simulated** (sample address and balance) |
+| Solana wallet connection (Wallet Adapter, Devnet) with real balance | ✅ Working, read-only (no signatures yet) |
+| Supported wallets page (`/wallets`) with detection and Devnet faucet guide | ✅ Working |
 | On-chain fees, Piñata vaults, and draws | ⏳ Roadmap |
 
 ### Blockchain and tools
 
-- **Blockchain:** Solana (target network: Devnet first). The current build simulates the wallet and SOL payments; nothing is on-chain yet.
+- **Blockchain:** Solana Devnet. Wallets connect for real through the Solana Wallet Adapter and the app reads the wallet balance from a Devnet RPC; SOL payments are still simulated and nothing is written on-chain yet.
+- **Solana libraries:** `@solana/wallet-adapter-react`, `@solana/wallet-adapter-base`, `@solana/web3.js` (Wallet Standard detection, so EVM-only wallets are ignored)
 - **Frontend:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
 - **Validation:** Zod
 - **Local auth:** Web Crypto API (salted PBKDF2-SHA-256 password hashes), `localStorage` sessions
 - **Hosting:** Vercel
-- **Planned Solana stack:** Solana Wallet Adapter (Phantom, Solflare, Backpack), Anchor program with PDAs for fee splits and Piñata vaults, verifiable randomness (e.g. Switchboard VRF) for fair draws, SPL tokens (USDC and community tokens), Solana Actions and Blinks for paid comments anywhere on the web
+- **Planned Solana stack:** Anchor program with PDAs for fee splits and Piñata vaults, verifiable randomness (e.g. Switchboard VRF) for fair draws, SPL tokens (USDC and community tokens), Solana Actions and Blinks for paid comments anywhere on the web
 
 ### Composability
 
@@ -83,7 +85,7 @@ Pinata is designed around Solana primitives, so each piece can plug into the wid
 
 1. ✅ Frontend MVP: feed, trending, profiles, paid comments, Creator Piñata, Platform Pool UI
 2. ✅ Accounts: registration, sign-in, dashboard, local persistence
-3. ⏳ Real wallet connection with Solana Wallet Adapter
+3. ✅ Real wallet connection with Solana Wallet Adapter on Devnet (address and balance)
 4. ⏳ Anchor program on Devnet: comment payments, fee split, Piñata vaults in PDAs
 5. ⏳ Verifiable randomness for Piñata and Platform Pool draws
 6. ⏳ Backend accounts linked to wallets, Blinks for paid comments, USDC support
@@ -97,7 +99,7 @@ Location: **Brazil** 🇧🇷
 
 ### Videos
 
-Each video comes in **English** and **Brazilian Portuguese**, with narration and burned-in subtitles in the same language, plus `.srt` files for YouTube or Loom. See [videos/README.md](videos/README.md).
+Each video comes in **English** and **Brazilian Portuguese**, with narration and burned-in subtitles in the same language, plus `.srt` files for YouTube or Loom. See [videos/README.md](videos/README.md). The current videos were recorded before the real wallet connection, so they show the earlier simulated wallet.
 
 | Video | English | Português (pt-BR) | Script |
 | --- | --- | --- | --- |
@@ -124,12 +126,14 @@ npm run dev
 
 Open http://localhost:3000, create an account, and explore. To try the Piñata burst, create a post with one account, sign out, comment on it with a second account, then sign back in with the first account and open the dashboard.
 
+To connect a wallet, install a Solana wallet such as [Phantom](https://phantom.com/download), sign in, and click **Connect Wallet**. The **Solana wallets** card on the home page opens [`/wallets`](https://pinata-zeta.vercel.app/wallets), which lists the supported wallets, shows which ones your browser has, and links to the [Solana Faucet](https://faucet.solana.com) for free Devnet SOL.
+
 ---
 
 ## 🇧🇷 Português
 
 > [!IMPORTANT]
-> **Status do protótipo: a integração com a Solana é simulada.** O MVP atual é um frontend em Next.js. O botão "Connect Wallet" mostra um endereço e saldo de exemplo, e todos os valores em SOL (taxas de comentário, saldos da Piñata, prêmios) são calculados localmente no navegador. **Nenhuma carteira é conectada e nenhuma transação é enviada para a Solana ainda.** Contas e atividade ficam no `localStorage` do navegador. O programa on-chain é o próximo marco (veja o [Roadmap](#roadmap-1)).
+> **Status do protótipo: conexão de carteira real, pagamentos simulados.** O MVP atual é um frontend em Next.js. O botão "Connect Wallet" conecta uma carteira Solana de verdade (Phantom, Solflare, Backpack, Trust Wallet ou qualquer outra compatível com o Wallet Standard) pelo Solana Wallet Adapter, na **Devnet**, e mostra o saldo real da carteira na Devnet. **Taxas de comentário, saldos da Piñata e prêmios continuam simulados:** são calculados localmente no navegador, e o app ainda não pede assinaturas nem envia transações. Contas e atividade ficam no `localStorage` do navegador. O programa on-chain é o próximo marco (veja o [Roadmap](#roadmap-1)).
 
 ### O que é o Pinata?
 
@@ -157,17 +161,19 @@ Criadores ganham com a conversa, comentaristas são recompensados por participar
 | Card do Piñata Pool da plataforma com contagem regressiva mensal | ✅ Interface com dados de exemplo |
 | Edição de perfil e perfis públicos | ✅ Funcionando |
 | Persistência após recarregar (contas, posts, votos, comentários, histórico) | ✅ Funcionando no mesmo navegador |
-| Conexão de carteira Solana | 🟡 **Simulada** (endereço e saldo de exemplo) |
+| Conexão de carteira Solana (Wallet Adapter, Devnet) com saldo real | ✅ Funcionando, somente leitura (sem assinaturas ainda) |
+| Página de carteiras compatíveis (`/wallets`) com detecção e guia de faucet da Devnet | ✅ Funcionando |
 | Taxas, cofres da Piñata e sorteios on-chain | ⏳ Roadmap |
 
 ### Blockchain e ferramentas
 
-- **Blockchain:** Solana (rede alvo: Devnet primeiro). A versão atual simula a carteira e os pagamentos em SOL; nada está on-chain ainda.
+- **Blockchain:** Solana Devnet. As carteiras conectam de verdade pelo Solana Wallet Adapter e o app lê o saldo por um RPC da Devnet; os pagamentos em SOL continuam simulados e nada é gravado on-chain ainda.
+- **Bibliotecas Solana:** `@solana/wallet-adapter-react`, `@solana/wallet-adapter-base`, `@solana/web3.js` (detecção pelo Wallet Standard, então carteiras só-EVM são ignoradas)
 - **Frontend:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
 - **Validação:** Zod
 - **Autenticação local:** Web Crypto API (hash de senha PBKDF2-SHA-256 com salt), sessão no `localStorage`
 - **Hospedagem:** Vercel
-- **Stack Solana planejada:** Solana Wallet Adapter (Phantom, Solflare, Backpack), programa Anchor com PDAs para divisão de taxas e cofres da Piñata, aleatoriedade verificável (ex.: Switchboard VRF) para sorteios justos, tokens SPL (USDC e tokens de comunidade), Solana Actions e Blinks para comentários pagos em qualquer lugar da web
+- **Stack Solana planejada:** programa Anchor com PDAs para divisão de taxas e cofres da Piñata, aleatoriedade verificável (ex.: Switchboard VRF) para sorteios justos, tokens SPL (USDC e tokens de comunidade), Solana Actions e Blinks para comentários pagos em qualquer lugar da web
 
 ### Composabilidade
 
@@ -191,7 +197,7 @@ O Pinata foi pensado sobre primitivas da Solana, para que cada parte se conecte 
 
 1. ✅ MVP de frontend: feed, posts em alta, perfis, comentários pagos, Piñata do Criador, interface do Pool da plataforma
 2. ✅ Contas: cadastro, login, dashboard, persistência local
-3. ⏳ Conexão real de carteira com Solana Wallet Adapter
+3. ✅ Conexão real de carteira com Solana Wallet Adapter na Devnet (endereço e saldo)
 4. ⏳ Programa Anchor na Devnet: pagamento de comentários, divisão de taxas, cofres da Piñata em PDAs
 5. ⏳ Aleatoriedade verificável nos sorteios da Piñata e do Pool
 6. ⏳ Contas em backend vinculadas à carteira, Blinks para comentários pagos, suporte a USDC
@@ -205,7 +211,7 @@ Localização: **Brasil** 🇧🇷
 
 ### Vídeos
 
-Cada vídeo existe em **inglês** e em **português do Brasil**, com narração e legendas embutidas no mesmo idioma, além dos arquivos `.srt` para YouTube ou Loom. Veja [videos/README.md](videos/README.md).
+Cada vídeo existe em **inglês** e em **português do Brasil**, com narração e legendas embutidas no mesmo idioma, além dos arquivos `.srt` para YouTube ou Loom. Veja [videos/README.md](videos/README.md). Os vídeos atuais foram gravados antes da conexão real de carteira, por isso mostram a carteira simulada anterior.
 
 | Vídeo | Inglês | Português (pt-BR) | Roteiro |
 | --- | --- | --- | --- |
@@ -221,6 +227,8 @@ npm run dev
 ```
 
 Abra http://localhost:3000, crie uma conta e explore. Para testar o estouro da Piñata, crie um post com uma conta, saia, comente nele com uma segunda conta e depois entre de novo com a primeira conta e abra o dashboard.
+
+Para conectar uma carteira, instale uma carteira Solana como a [Phantom](https://phantom.com/download), entre na sua conta e clique em **Connect Wallet**. O card **Solana wallets** na home abre a página [`/wallets`](https://pinata-zeta.vercel.app/wallets), que lista as carteiras compatíveis, mostra quais o seu navegador tem e leva ao [Solana Faucet](https://faucet.solana.com) para pegar SOL de Devnet de graça.
 
 ## License
 
