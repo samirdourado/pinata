@@ -145,6 +145,31 @@ export function getStoredAuthUser(): AuthUser | null {
   return account ? toAuthUser(account) : null;
 }
 
+export interface AuthSnapshot {
+  user: AuthUser | null;
+  isReady: boolean;
+}
+
+const AUTH_CHANGE_EVENT = "pinata-auth-change";
+const SERVER_AUTH_SNAPSHOT: AuthSnapshot = { user: null, isReady: false };
+let authSnapshot: AuthSnapshot | null = null;
+
+/** Current session for useSyncExternalStore, cached until the session changes. */
+export function getAuthSnapshot(): AuthSnapshot {
+  authSnapshot ??= { user: getStoredAuthUser(), isReady: true };
+  return authSnapshot;
+}
+
+/** The server has no localStorage, so it always renders the signed-out state. */
+export function getServerAuthSnapshot(): AuthSnapshot {
+  return SERVER_AUTH_SNAPSHOT;
+}
+
+function notifyAuthChange() {
+  authSnapshot = null;
+  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+}
+
 export async function registerUser(input: RegistrationInput): Promise<AuthUser> {
   const validated = registrationSchema.parse(input);
   const accounts = getAccounts();
@@ -172,7 +197,7 @@ export async function registerUser(input: RegistrationInput): Promise<AuthUser> 
 
   saveAccounts([...accounts, account]);
   window.localStorage.setItem(SESSION_KEY, account.id);
-  window.dispatchEvent(new Event("pinata-auth-change"));
+  notifyAuthChange();
   return toAuthUser(account);
 }
 
@@ -194,7 +219,7 @@ export async function loginUser(input: LoginInput): Promise<AuthUser> {
   }
 
   window.localStorage.setItem(SESSION_KEY, account.id);
-  window.dispatchEvent(new Event("pinata-auth-change"));
+  notifyAuthChange();
   return toAuthUser(account);
 }
 
@@ -224,25 +249,26 @@ export function updateAccountProfile(
   saveAccounts(
     accounts.map((item) => (item.id === accountId ? updatedAccount : item)),
   );
-  window.dispatchEvent(new Event("pinata-auth-change"));
+  notifyAuthChange();
   return toAuthUser(updatedAccount);
 }
 
 export function logoutUser() {
   window.localStorage.removeItem(SESSION_KEY);
-  window.dispatchEvent(new Event("pinata-auth-change"));
+  notifyAuthChange();
 }
 
 export function subscribeAuth(listener: () => void) {
   const handleStorage = (event: StorageEvent) => {
-    if (event.key === USERS_KEY || event.key === SESSION_KEY) listener();
+    if (event.key !== USERS_KEY && event.key !== SESSION_KEY) return;
+    authSnapshot = null;
+    listener();
   };
-  const handleAuthChange = () => listener();
   window.addEventListener("storage", handleStorage);
-  window.addEventListener("pinata-auth-change", handleAuthChange);
+  window.addEventListener(AUTH_CHANGE_EVENT, listener);
 
   return () => {
     window.removeEventListener("storage", handleStorage);
-    window.removeEventListener("pinata-auth-change", handleAuthChange);
+    window.removeEventListener(AUTH_CHANGE_EVENT, listener);
   };
 }
