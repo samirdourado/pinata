@@ -1,0 +1,39 @@
+# One compose file for the whole monorepo; each app keeps its own Dockerfile
+name: pinata
+
+services:
+  # Production build: docker compose up --build
+  front:
+    build:
+      context: ./pinata_front
+      target: runner
+    image: pinata-front
+    container_name: pinata-front
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  # Development server with hot reload: docker compose --profile dev watch
+  front-dev:
+    profiles: [dev]
+    build:
+      context: ./pinata_front
+      target: dev
+    image: pinata-front-dev
+    container_name: pinata-front-dev
+    ports:
+      - "3000:3000"
+    # Compose Watch copies edited files into the container, so the dev server's
+    # own file watcher sees them (bind mounts on Windows/macOS lose the events)
+    develop:
+      watch:
+        - action: sync
+          path: ./pinata_front
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: rebuild
+          path: ./pinata_front/package.json
+        - action: rebuild
+          path: ./pinata_front/package-lock.json
