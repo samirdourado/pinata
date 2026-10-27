@@ -18,6 +18,7 @@ Live: https://pinata-zeta.vercel.app/ · [Português](#-português)
 - Zod for form and data validation
 - Web Crypto API for local password hashing
 - Client-side state persisted in `localStorage`
+- Docker (multi-stage image) and Docker Compose
 
 ### Features
 
@@ -89,6 +90,24 @@ utils/        authStore (accounts and sessions), socialStore (posts, votes, comm
 
 ### Getting started
 
+#### With Docker
+
+The app is containerized. The services are defined in `compose.yaml` at the repository root, so run these commands from there (one level above this folder):
+
+```bash
+docker compose up --build            # production build on http://localhost:3000
+docker compose --profile dev watch   # development server with hot reload
+docker compose down                  # stop and remove the containers
+```
+
+- `front` (default) builds the `runner` stage of the [Dockerfile](Dockerfile): a Node.js 24 Alpine image that runs the Next.js standalone server (`output: "standalone"` in `next.config.ts`) as the non-root `node` user, with only the files the server needs.
+- `front-dev` (profile `dev`) builds the `dev` stage and runs `next dev`. [Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) copies each file you save into the container, so hot reload works on Windows and macOS without polling. Changes to `package.json` or `package-lock.json` rebuild the image.
+- Both use port 3000, so run one at a time. With the standalone Compose binary, write `docker-compose` instead of `docker compose`.
+
+#### With Node.js
+
+Requires Node.js 20.9 or later.
+
 ```bash
 npm install
 npm run dev
@@ -132,6 +151,7 @@ Open http://localhost:3000.
 - Zod para validação de formulários e dados
 - Web Crypto API para hash de senha local
 - Estado no cliente persistido no `localStorage`
+- Docker (imagem multi-stage) e Docker Compose
 
 ### Funcionalidades
 
@@ -188,6 +208,24 @@ Regras de validação: username de 3 a 20 caracteres (letras, números e undersc
 > É uma autenticação de protótipo, não segurança no servidor. Tudo no `localStorage` pode ser lido ou editado pelo usuário, e os dados não sincronizam entre navegadores ou dispositivos. Não use para proteger dados reais nem autorizar pagamentos reais. Para reiniciar a demo, limpe os dados do site no navegador.
 
 ### Como rodar
+
+#### Com Docker
+
+O app está containerizado. Os serviços ficam no `compose.yaml` da raiz do repositório, então rode estes comandos de lá (uma pasta acima desta):
+
+```bash
+docker compose up --build            # build de produção em http://localhost:3000
+docker compose --profile dev watch   # servidor de desenvolvimento com hot reload
+docker compose down                  # para e remove os containers
+```
+
+- `front` (padrão) gera o estágio `runner` do [Dockerfile](Dockerfile): uma imagem Node.js 24 Alpine que roda o servidor standalone do Next.js (`output: "standalone"` no `next.config.ts`) com o usuário sem privilégios `node`, só com os arquivos de que o servidor precisa.
+- `front-dev` (perfil `dev`) gera o estágio `dev` e roda o `next dev`. O [Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) copia cada arquivo que você salva para dentro do container, então o hot reload funciona no Windows e no macOS sem polling. Mudanças no `package.json` ou no `package-lock.json` geram a imagem de novo.
+- Os dois usam a porta 3000, então rode um de cada vez. Com o Compose avulso, use `docker-compose` no lugar de `docker compose`.
+
+#### Com Node.js
+
+Requer Node.js 20.9 ou superior.
 
 ```bash
 npm install

@@ -1,8 +1,8 @@
 # Pitch Video Script (English)
 
-Video: `pitch-video-en.mp4` (about 2:45). Narration and subtitles in English: [`pitch-video-en.srt`](pitch-video-en.srt).
+Video: [watch on YouTube](https://www.youtube.com/watch?v=ev8Xz9rm4Nk) (about 2:45). Narration and subtitles in English: [`pitch-video-en.srt`](pitch-video-en.srt).
 
-> Prototype status: wallet connection and all SOL payments are **simulated** in the frontend. Accounts and activity are stored in the browser's `localStorage`. No transaction is sent to Solana yet.
+> Prototype status when the video was recorded (the wallet connection is now real, on Devnet): wallet connection and all SOL payments are **simulated** in the frontend. Accounts and activity are stored in the browser's `localStorage`. No transaction is sent to Solana yet.
 
 ## The problem
 
@@ -72,7 +72,7 @@ Pinata turns comments into value for creators and communities. Help us build a b
 
 # Roteiro do Vídeo de Pitch (pt-BR)
 
-Vídeo: `pitch-video-pt-BR.mp4` (cerca de 2:50). Narração e legendas em português: [`pitch-video-pt-BR.srt`](pitch-video-pt-BR.srt).
+Vídeo publicado: [assista no YouTube](https://www.youtube.com/watch?v=ev8Xz9rm4Nk), em inglês. Este roteiro é a versão em português, e as legendas em português estão em [`pitch-video-pt-BR.srt`](pitch-video-pt-BR.srt), sincronizadas com a narração em português.
 
 > Status do protótipo: a conexão de carteira e todos os pagamentos em SOL são **simulados** no frontend. Contas e atividade ficam no `localStorage` do navegador. Nenhuma transação é enviada para a Solana ainda.
 

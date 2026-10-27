@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+coverage
+pinata_front
+.git
+.gitignore
+.vercel
+.env*
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+Dockerfile
+.dockerignore
+README.md

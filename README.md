@@ -12,7 +12,8 @@
 <p align="center">
   <a href="https://pinata-zeta.vercel.app/">Live app</a> ·
   <a href="https://github.com/samirdourado/pinata">GitHub</a> ·
-  <a href="videos/">Pitch and demo videos</a> ·
+  <a href="https://www.youtube.com/watch?v=ev8Xz9rm4Nk">Pitch video</a> ·
+  <a href="https://www.youtube.com/watch?v=Un_GRtISO6M">Demo video</a> ·
   <a href="#-português">Português</a>
 </p>
 
@@ -61,6 +62,7 @@ Creators earn from conversation, commenters are rewarded for showing up, and qua
 - **Validation:** Zod
 - **Local auth:** Web Crypto API (salted PBKDF2-SHA-256 password hashes), `localStorage` sessions
 - **Hosting:** Vercel
+- **Containers:** Docker and Docker Compose (production image and development server)
 - **Planned Solana stack:** Anchor program with PDAs for fee splits and Piñata vaults, verifiable randomness (e.g. Switchboard VRF) for fair draws, SPL tokens (USDC and community tokens), Solana Actions and Blinks for paid comments anywhere on the web
 
 ### Composability
@@ -99,24 +101,44 @@ Location: **Brazil** 🇧🇷
 
 ### Videos
 
-Each video comes in **English** and **Brazilian Portuguese**, with narration and burned-in subtitles in the same language, plus `.srt` files for YouTube or Loom. See [videos/README.md](videos/README.md). The current videos were recorded before the real wallet connection, so they show the earlier simulated wallet.
+The pitch and the demo are on YouTube, narrated in English with English subtitles. The video files are not stored in this repository. The `videos/` folder keeps the bilingual scripts, the subtitle files in English and Brazilian Portuguese, and the tooling that records and renders the videos (see [videos/README.md](videos/README.md)). The videos were recorded before the real wallet connection, so they show the earlier simulated wallet.
 
-| Video | English | Português (pt-BR) | Script |
+| Video | Watch | Script (EN and pt-BR) | Subtitles |
 | --- | --- | --- | --- |
-| Pitch | `videos/pitch-video-en.mp4` (~2:45) | `videos/pitch-video-pt-BR.mp4` (~2:50) | [pitch-video-script.md](videos/pitch-video-script.md) |
-| Demo | `videos/demo-video-en.mp4` (~2:45) | `videos/demo-video-pt-BR.mp4` (~2:40) | [demo-video-script.md](videos/demo-video-script.md) |
-
-<!-- Add the public YouTube/Loom links here after uploading the videos. -->
+| Pitch (~2:45) | [YouTube](https://www.youtube.com/watch?v=ev8Xz9rm4Nk) | [pitch-video-script.md](videos/pitch-video-script.md) | [EN](videos/pitch-video-en.srt) · [pt-BR](videos/pitch-video-pt-BR.srt) |
+| Demo (~2:45) | [YouTube](https://www.youtube.com/watch?v=Un_GRtISO6M) | [demo-video-script.md](videos/demo-video-script.md) | [EN](videos/demo-video-en.srt) · [pt-BR](videos/demo-video-pt-BR.srt) |
 
 ### Repository structure
 
 ```text
 pinata/
+├── compose.yaml    Docker Compose services (production and development)
 ├── pinata_front/   Next.js frontend (see pinata_front/README.md)
-└── videos/         Pitch/demo scripts, EN and pt-BR subtitles, capture and render scripts
+└── videos/         Pitch/demo scripts, EN and pt-BR subtitles, capture and render scripts (the videos are on YouTube)
 ```
 
 ### Run locally
+
+**With Docker (recommended).** You only need [Docker](https://docs.docker.com/get-docker/) with Compose; Node.js is not required. Run these from the repository root:
+
+```bash
+# Production build, the same app that runs on the live site
+docker compose up --build        # add -d to run in the background
+
+# Development server with hot reload
+docker compose --profile dev watch
+```
+
+| Command | What it does |
+| --- | --- |
+| `docker compose up --build` | Builds the production image (`front` service) and serves it |
+| `docker compose --profile dev watch` | Runs `next dev` in a container (`front-dev` service) and syncs every file you save into it |
+| `docker compose logs -f` | Follows the logs of the running services |
+| `docker compose down` | Stops and removes the containers |
+
+Both services use port 3000, so run one at a time. If your Docker installation only has the standalone Compose binary, write `docker-compose` instead of `docker compose`. In development mode, a change to `package.json` or `package-lock.json` rebuilds the image automatically.
+
+**Without Docker.** Requires Node.js 20.9 or later:
 
 ```bash
 cd pinata_front
@@ -124,7 +146,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000, create an account, and explore. To try the Piñata burst, create a post with one account, sign out, comment on it with a second account, then sign back in with the first account and open the dashboard.
+Either way, open http://localhost:3000, create an account, and explore. To try the Piñata burst, create a post with one account, sign out, comment on it with a second account, then sign back in with the first account and open the dashboard.
 
 To connect a wallet, install a Solana wallet such as [Phantom](https://phantom.com/download), sign in, and click **Connect Wallet**. The **Solana wallets** card on the home page opens [`/wallets`](https://pinata-zeta.vercel.app/wallets), which lists the supported wallets, shows which ones your browser has, and links to the [Solana Faucet](https://faucet.solana.com) for free Devnet SOL.
 
@@ -173,6 +195,7 @@ Criadores ganham com a conversa, comentaristas são recompensados por participar
 - **Validação:** Zod
 - **Autenticação local:** Web Crypto API (hash de senha PBKDF2-SHA-256 com salt), sessão no `localStorage`
 - **Hospedagem:** Vercel
+- **Containers:** Docker e Docker Compose (imagem de produção e servidor de desenvolvimento)
 - **Stack Solana planejada:** programa Anchor com PDAs para divisão de taxas e cofres da Piñata, aleatoriedade verificável (ex.: Switchboard VRF) para sorteios justos, tokens SPL (USDC e tokens de comunidade), Solana Actions e Blinks para comentários pagos em qualquer lugar da web
 
 ### Composabilidade
@@ -211,14 +234,35 @@ Localização: **Brasil** 🇧🇷
 
 ### Vídeos
 
-Cada vídeo existe em **inglês** e em **português do Brasil**, com narração e legendas embutidas no mesmo idioma, além dos arquivos `.srt` para YouTube ou Loom. Veja [videos/README.md](videos/README.md). Os vídeos atuais foram gravados antes da conexão real de carteira, por isso mostram a carteira simulada anterior.
+O pitch e a demo estão no YouTube, com narração e legendas em inglês. Os arquivos de vídeo não ficam neste repositório. A pasta `videos/` guarda os roteiros bilíngues, as legendas em inglês e em português do Brasil e as ferramentas que gravam e renderizam os vídeos (veja [videos/README.md](videos/README.md)). Os vídeos foram gravados antes da conexão real de carteira, por isso mostram a carteira simulada anterior.
 
-| Vídeo | Inglês | Português (pt-BR) | Roteiro |
+| Vídeo | Assistir | Roteiro (EN e pt-BR) | Legendas |
 | --- | --- | --- | --- |
-| Pitch | `videos/pitch-video-en.mp4` (~2:45) | `videos/pitch-video-pt-BR.mp4` (~2:50) | [pitch-video-script.md](videos/pitch-video-script.md) |
-| Demo | `videos/demo-video-en.mp4` (~2:45) | `videos/demo-video-pt-BR.mp4` (~2:40) | [demo-video-script.md](videos/demo-video-script.md) |
+| Pitch (~2:45) | [YouTube](https://www.youtube.com/watch?v=ev8Xz9rm4Nk) | [pitch-video-script.md](videos/pitch-video-script.md) | [EN](videos/pitch-video-en.srt) · [pt-BR](videos/pitch-video-pt-BR.srt) |
+| Demo (~2:45) | [YouTube](https://www.youtube.com/watch?v=Un_GRtISO6M) | [demo-video-script.md](videos/demo-video-script.md) | [EN](videos/demo-video-en.srt) · [pt-BR](videos/demo-video-pt-BR.srt) |
 
 ### Rodar localmente
+
+**Com Docker (recomendado).** Você só precisa do [Docker](https://docs.docker.com/get-docker/) com Compose; não é preciso ter Node.js. Rode na raiz do repositório:
+
+```bash
+# Build de produção, o mesmo app que roda no site publicado
+docker compose up --build        # adicione -d para rodar em segundo plano
+
+# Servidor de desenvolvimento com hot reload
+docker compose --profile dev watch
+```
+
+| Comando | O que faz |
+| --- | --- |
+| `docker compose up --build` | Gera a imagem de produção (serviço `front`) e serve o app |
+| `docker compose --profile dev watch` | Roda o `next dev` num container (serviço `front-dev`) e sincroniza cada arquivo que você salva |
+| `docker compose logs -f` | Acompanha os logs dos serviços em execução |
+| `docker compose down` | Para e remove os containers |
+
+Os dois serviços usam a porta 3000, então rode um de cada vez. Se a sua instalação do Docker tiver só o Compose avulso, use `docker-compose` no lugar de `docker compose`. No modo de desenvolvimento, uma mudança no `package.json` ou no `package-lock.json` gera a imagem de novo automaticamente.
+
+**Sem Docker.** Requer Node.js 20.9 ou superior:
 
 ```bash
 cd pinata_front
@@ -226,7 +270,7 @@ npm install
 npm run dev
 ```
 
-Abra http://localhost:3000, crie uma conta e explore. Para testar o estouro da Piñata, crie um post com uma conta, saia, comente nele com uma segunda conta e depois entre de novo com a primeira conta e abra o dashboard.
+Em qualquer um dos casos, abra http://localhost:3000, crie uma conta e explore. Para testar o estouro da Piñata, crie um post com uma conta, saia, comente nele com uma segunda conta e depois entre de novo com a primeira conta e abra o dashboard.
 
 Para conectar uma carteira, instale uma carteira Solana como a [Phantom](https://phantom.com/download), entre na sua conta e clique em **Connect Wallet**. O card **Solana wallets** na home abre a página [`/wallets`](https://pinata-zeta.vercel.app/wallets), que lista as carteiras compatíveis, mostra quais o seu navegador tem e leva ao [Solana Faucet](https://faucet.solana.com) para pegar SOL de Devnet de graça.
 

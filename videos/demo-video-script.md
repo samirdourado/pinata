@@ -1,8 +1,8 @@
 # Demo Video Script (English)
 
-Video: `demo-video-en.mp4` (about 2:45). Narration and subtitles in English: [`demo-video-en.srt`](demo-video-en.srt).
+Video: [watch on YouTube](https://www.youtube.com/watch?v=Un_GRtISO6M) (about 2:45). Narration and subtitles in English: [`demo-video-en.srt`](demo-video-en.srt).
 
-> Prototype status: wallet connection and all SOL payments are **simulated** in the frontend. Accounts and activity are stored in the browser's `localStorage`. No transaction is sent to Solana yet.
+> Prototype status when the video was recorded (the wallet connection is now real, on Devnet): wallet connection and all SOL payments are **simulated** in the frontend. Accounts and activity are stored in the browser's `localStorage`. No transaction is sent to Solana yet.
 
 ## Welcome
 
@@ -94,7 +94,7 @@ Next on Solana: the wallet adapter for real signatures, an Anchor program holdin
 
 # Roteiro do Vídeo de Demo (pt-BR)
 
-Vídeo: `demo-video-pt-BR.mp4` (cerca de 2:40). Narração e legendas em português: [`demo-video-pt-BR.srt`](demo-video-pt-BR.srt).
+Vídeo publicado: [assista no YouTube](https://www.youtube.com/watch?v=Un_GRtISO6M), em inglês. Este roteiro é a versão em português, e as legendas em português estão em [`demo-video-pt-BR.srt`](demo-video-pt-BR.srt), sincronizadas com a narração em português.
 
 > Status do protótipo: a conexão de carteira e todos os pagamentos em SOL são **simulados** no frontend. Contas e atividade ficam no `localStorage` do navegador. Nenhuma transação é enviada para a Solana ainda.
 
