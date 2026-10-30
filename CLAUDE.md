@@ -4,10 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Pinata is a hackathon prototype of a Solana SocialFi app: posting is free, comments carry a small SOL fee, and 40% of each fee fills the post author's "Creator Piñata" prize pool. **Only the wallet connection is real:** a Solana wallet connects through the Solana Wallet Adapter on Devnet and the app reads its balance, but payments, Piñata balances and prizes are simulated. There is no backend, no transaction signing and no on-chain code. All app state lives in the browser's `localStorage`. The READMEs are bilingual (English and pt-BR); keep both language sections in sync when you edit them.
+Pinata is a hackathon prototype of a Solana SocialFi app: posting is free, comments carry a small SOL fee, and 40% of each fee fills the post author's "Creator Piñata" prize pool. **Only the wallet connection is real:** a Solana wallet connects through the Solana Wallet Adapter on Devnet and the app reads its balance, but payments, Piñata balances and prizes are simulated. The app has no backend and signs no transactions; all app state lives in the browser's `localStorage`. The on-chain program in `pinata_back/` exists but is not deployed or connected yet. The READMEs are bilingual (English and pt-BR); keep both language sections in sync when you edit them.
 
 - `pinata_front/`: the Next.js app (everything that runs), with its `Dockerfile`
-- `compose.yaml`: Docker Compose services for the frontend (production and dev)
+- `pinata_back/`: the Solana program in Rust/Anchor (phase 1 of 5: written and tested locally, not deployed, not wired to the frontend). Design and business rules: `pinata_back/docs/DESIGN.md` (pt-BR)
+- `compose.yaml`: Docker Compose services for the frontend (production and dev) and the Anchor toolchain
 - `videos/`: Python tooling that drives the running app with Playwright and renders the pitch and demo MP4s
 
 ## Commands
@@ -36,6 +37,20 @@ docker compose down
 - The Dockerfile needs BuildKit (`RUN --mount`). If `docker compose` or `docker buildx` say "unknown command", Docker Desktop's plugin folder is missing from `~/.docker/config.json` (`cliPluginsExtraDirs`), and the standalone `docker-compose` falls back to the slow classic builder, which leaves randomly named containers behind.
 - The base image is `node:24-alpine` because `package-lock.json` is written by npm 11. With npm 10 (Node 22 images), `npm ci` rejects the lock file over optional peers (`utf-8-validate`).
 - `front-dev` deliberately uses Compose Watch instead of a bind mount. On Windows, Turbopack misses file events through bind mounts, and a mounted `next dev` with telemetry disabled rewrites `pinata_front/AGENTS.md` on the host.
+
+Solana program (`pinata_back/`), through the `anchor` service (profile `tools`, image `solanafoundation/anchor:v1.0.2`), from the repo root:
+
+```bash
+docker compose run --rm anchor anchor build      # target/deploy/pinata.so
+docker compose run --rm anchor anchor run test   # anchor build + cargo test (unit + LiteSVM)
+docker compose run --rm anchor cargo test --test test_draws <name>   # one test
+```
+
+- `target/`, the Cargo caches and `~/.config/solana` are Docker volumes, not the host folder. The program keypair is `pinata_back/keys/pinata-program-keypair.json` (git-ignored, program id `CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`). The `pre_build` hook in `Anchor.toml` copies it into `target/deploy/`. Do not run `anchor keys sync` blindly: it rewrites the id from whatever keypair is in `target/deploy/`.
+- The `anchor-lang` crate is 1.2.2 while the CLI is 1.0.2. Pinning `anchor-lang = "=1.0.2"` breaks the build, because its derive macros resolve to 1.2.x. VRF uses `ephemeral-vrf-sdk` 0.17.3 with explicit accounts (`instructions/vrf.rs`), not its `#[vrf]` macros.
+- The LiteSVM tests load the real MagicBlock VRF program and oracle queue from `programs/pinata/tests/fixtures/` (dumped from Devnet). They run with sigverify off so `consume_randomness` can be signed as the scoped VRF identity PDA.
+- `Pinata` accounts hold their prize as lamports above rent, with 32-byte tickets appended after the header (`Pinata::TICKETS_OFFSET`). `pay_comment` grows the account manually (`resize`) and sends the exact rent delta. Anchor's `realloc` constraint would take the rent from the prize.
+- PowerShell pipes to `docker compose run` add a BOM and CRLF. To pass a multi-line script, base64-encode it and run `bash -c "echo <b64> | base64 -d | bash"`.
 
 Video pipeline (Python 3.11, repo `.venv`). The app must be running (`npm run build && npm run start`, or `docker compose up --build`):
 
