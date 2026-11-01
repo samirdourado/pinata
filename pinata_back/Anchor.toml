@@ -1,0 +1,24 @@
+[toolchain]
+package_manager = "yarn"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+pinata = "CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8"
+
+[programs.devnet]
+pinata = "CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+# anchor run test: builds the program, then runs the unit tests and the LiteSVM tests against target/deploy/pinata.so
+test = "anchor build && cargo test"
+
+[hooks]
+# The program keypair lives in keys/ (git-ignored); target/ is a Docker volume
+pre_build = "mkdir -p target/deploy && cp keys/pinata-program-keypair.json target/deploy/pinata-keypair.json"

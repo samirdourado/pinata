@@ -37,3 +37,24 @@ services:
           path: ./pinata_front/package.json
         - action: rebuild
           path: ./pinata_front/package-lock.json
+
+  # Solana/Anchor toolchain for the on-chain program:
+  # docker compose run --rm anchor <command>, e.g. anchor build, cargo test
+  anchor:
+    profiles: [tools]
+    image: solanafoundation/anchor:v1.0.2
+    container_name: pinata-anchor
+    working_dir: /workdir/pinata_back
+    volumes:
+      - ./pinata_back:/workdir/pinata_back
+      # Build output and caches live in volumes: much faster than the Windows bind mount
+      - anchor-target:/workdir/pinata_back/target
+      - anchor-cargo-registry:/root/.cargo/registry
+      - anchor-cargo-git:/root/.cargo/git
+      - solana-config:/root/.config/solana
+
+volumes:
+  anchor-target:
+  anchor-cargo-registry:
+  anchor-cargo-git:
+  solana-config:
