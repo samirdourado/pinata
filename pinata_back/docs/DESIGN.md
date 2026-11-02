@@ -133,7 +133,9 @@ O SOL do prêmio fica na própria conta `Pinata`. Invariante: `saldo = rent(tama
 
 ### Limitação conhecida
 
-`initialize` pode ser chamada por qualquer carteira, uma única vez. Por isso o deploy e a inicialização devem ser feitos em sequência pelo admin. Para produção, a instrução deve exigir que quem chama seja a *upgrade authority* do programa.
+`initialize` pode ser chamada por qualquer carteira, uma única vez. Por isso o deploy e a inicialização devem ser feitos em sequência pelo admin, como foi feito na Devnet. Para produção, a instrução deve exigir que quem chama seja a *upgrade authority* do programa.
+
+O oráculo da MagicBlock pode entregar a mesma resposta mais de uma vez. As entregas repetidas falham dentro do próprio programa VRF (erro `0x1`) e aparecem como transações com erro no histórico da piñata. Isso é normal e não custa nada ao Pinata.
 
 ### Ciclo de uma piñata
 
@@ -156,7 +158,7 @@ Fluxo de um comentário: o frontend pede à API um `comment_id` → a carteira a
 ## 6. Fases
 
 1. **Programa Anchor + testes locais** (LiteSVM) e ambiente de build em Docker
-2. Deploy na Devnet e teste do sorteio com a VRF real
+2. **Deploy na Devnet e teste do sorteio com a VRF real** (feito em 02/11/2026: o oráculo respondeu em cerca de 2 s; os endereços estão no README)
 3. API em Rust (Axum + SQLx) + PostgreSQL, com migrations e seed dos dados de demonstração
 4. Frontend: trocar o `localStorage` pela API e fazer os pagamentos reais
 5. Automação: estouros ao atingir 100% e no dia 1º

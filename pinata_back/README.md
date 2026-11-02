@@ -5,7 +5,7 @@ On-chain program for [Pinata](../README.md), written in Rust with [Anchor](https
 [Português](#-português)
 
 > [!NOTE]
-> **Status: phase 1 of 5.** The program is written and tested locally. It is not deployed to Devnet yet, and the frontend still uses simulated payments. Next phases: Devnet deploy, API (Rust + PostgreSQL), frontend integration, and draw automation.
+> **Status: phase 2 of 5.** The program is deployed to Devnet and a full round was tested there with the real MagicBlock oracle. The frontend still uses simulated payments. Next phases: API (Rust + PostgreSQL), frontend integration, and draw automation.
 
 ## 🇺🇸 English
 
@@ -33,6 +33,7 @@ programs/pinata/src/
   draw.rs, calendar.rs       Winner selection and "1st of the month" (unit tested)
   events.rs, error.rs, constants.rs
 programs/pinata/tests/       LiteSVM tests; fixtures/ has the MagicBlock VRF program dumped from Devnet
+cli/                         Devnet client: init, status, draw-demo
 ```
 
 ### Build and test (Docker)
@@ -49,6 +50,27 @@ The first build downloads the image (about 10 GB) and compiles every dependency,
 
 The program keypair in `keys/` defines the program address (`CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`). A `pre_build` hook copies it into `target/deploy/`. Back it up: without it, the program cannot be deployed at the same address.
 
+### Devnet
+
+| What | Address |
+| --- | --- |
+| Program | [`CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`](https://solscan.io/account/CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8?cluster=devnet) |
+| Admin and upgrade authority (`keys/deploy-keypair.json`) | `DFmPPpaVFRdf3ewjy47HD2kMzzX4pEYjQscfqvbagdqb` |
+| Platform wallet | `BHC69pYbBMppUc9xc4QLMCbiPm9W7EMstYSr3gPJ3Bin` |
+| Config | `9hjHx23ZqsLwezgNBB14XVThbBrbYTLVyqTSUPhuJqZL` |
+
+The Devnet Config uses the agreed rules with small amounts (`devnet_params` in `cli/src/main.rs`): minimum comment 0.005 SOL, creator targets from 0.01 SOL, platform Piñata target 0.1 SOL.
+
+```bash
+# upgrade the program after a change (keeps the address)
+docker compose run --rm anchor bash -c "anchor build && solana program deploy target/deploy/pinata.so --program-id keys/pinata-program-keypair.json --keypair keys/deploy-keypair.json --url devnet"
+
+docker compose run --rm anchor cargo run -q -p pinata-cli -- status      # Config, platform and creator Piñatas
+docker compose run --rm anchor cargo run -q -p pinata-cli -- draw-demo   # full round with the real oracle
+```
+
+`draw-demo` opens a creator Piñata with the admin key as the creator, funds two test commenters (`keys/devnet-commenter-*.json`, 0.02 SOL each), pays one comment from each, bursts the Piñata early, waits for the MagicBlock oracle and settles. It resumes from the current state if it is interrupted.
+
 ---
 
 ## 🇧🇷 Português
@@ -56,7 +78,7 @@ The program keypair in `keys/` defines the program address (`CThrD6V4TBegostJqwo
 Programa on-chain do [Pinata](../README.md), escrito em Rust com [Anchor](https://www.anchor-lang.com/). Ele cuida da parte de dinheiro do app: a divisão dos comentários pagos, os prêmios das Piñatas e os sorteios verificáveis. O desenho, as regras de negócio e as decisões estão em [docs/DESIGN.md](docs/DESIGN.md).
 
 > [!NOTE]
-> **Status: fase 1 de 5.** O programa está escrito e testado localmente. Ainda não foi publicado na Devnet, e o frontend continua com pagamentos simulados. Próximas fases: deploy na Devnet, API (Rust + PostgreSQL), integração com o frontend e automação dos sorteios.
+> **Status: fase 2 de 5.** O programa está publicado na Devnet, e uma rodada completa foi testada lá com o oráculo real da MagicBlock. O frontend continua com pagamentos simulados. Próximas fases: API (Rust + PostgreSQL), integração com o frontend e automação dos sorteios.
 
 ### O que o programa faz
 
@@ -82,6 +104,7 @@ programs/pinata/src/
   draw.rs, calendar.rs       Sorteio dos vencedores e "dia 1º do mês" (com testes unitários)
   events.rs, error.rs, constants.rs
 programs/pinata/tests/       Testes com LiteSVM; fixtures/ tem o programa VRF da MagicBlock copiado da Devnet
+cli/                         Cliente da Devnet: init, status, draw-demo
 ```
 
 ### Compilar e testar (Docker)
@@ -97,3 +120,24 @@ docker compose run --rm anchor bash                  # terminal com todas as fer
 O primeiro build baixa a imagem (cerca de 10 GB) e compila todas as dependências, então leva alguns minutos. A `target/` e os caches do Cargo ficam em volumes do Docker, o que deixa os builds seguintes rápidos.
 
 A chave do programa em `keys/` define o endereço do programa (`CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`). Um hook `pre_build` copia a chave para `target/deploy/`. Guarde um backup: sem ela, não dá para publicar o programa no mesmo endereço.
+
+### Devnet
+
+| O quê | Endereço |
+| --- | --- |
+| Programa | [`CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`](https://solscan.io/account/CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8?cluster=devnet) |
+| Admin e upgrade authority (`keys/deploy-keypair.json`) | `DFmPPpaVFRdf3ewjy47HD2kMzzX4pEYjQscfqvbagdqb` |
+| Carteira da plataforma | `BHC69pYbBMppUc9xc4QLMCbiPm9W7EMstYSr3gPJ3Bin` |
+| Config | `9hjHx23ZqsLwezgNBB14XVThbBrbYTLVyqTSUPhuJqZL` |
+
+A Config da Devnet usa as regras combinadas com valores pequenos (`devnet_params` em `cli/src/main.rs`): comentário mínimo de 0,005 SOL, metas de criador a partir de 0,01 SOL e meta da Piñata da plataforma de 0,1 SOL.
+
+```bash
+# atualiza o programa depois de uma mudança (mantém o endereço)
+docker compose run --rm anchor bash -c "anchor build && solana program deploy target/deploy/pinata.so --program-id keys/pinata-program-keypair.json --keypair keys/deploy-keypair.json --url devnet"
+
+docker compose run --rm anchor cargo run -q -p pinata-cli -- status      # Config, Piñata da plataforma e do criador
+docker compose run --rm anchor cargo run -q -p pinata-cli -- draw-demo   # rodada completa com o oráculo real
+```
+
+O `draw-demo` abre uma Piñata de criador usando a chave de admin como criador, manda 0,02 SOL para dois comentaristas de teste (`keys/devnet-commenter-*.json`), paga um comentário de cada, estoura a Piñata antes da meta, espera o oráculo da MagicBlock e paga o vencedor. Se for interrompido, ele continua de onde parou.

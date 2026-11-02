@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Pinata is a hackathon prototype of a Solana SocialFi app: posting is free, comments carry a small SOL fee, and 40% of each fee fills the post author's "Creator Piñata" prize pool. **Only the wallet connection is real:** a Solana wallet connects through the Solana Wallet Adapter on Devnet and the app reads its balance, but payments, Piñata balances and prizes are simulated. The app has no backend and signs no transactions; all app state lives in the browser's `localStorage`. The on-chain program in `pinata_back/` exists but is not deployed or connected yet. The READMEs are bilingual (English and pt-BR); keep both language sections in sync when you edit them.
+Pinata is a hackathon prototype of a Solana SocialFi app: posting is free, comments carry a small SOL fee, and 40% of each fee fills the post author's "Creator Piñata" prize pool. **Only the wallet connection is real:** a Solana wallet connects through the Solana Wallet Adapter on Devnet and the app reads its balance, but payments, Piñata balances and prizes are simulated. The app has no backend and signs no transactions; all app state lives in the browser's `localStorage`. The on-chain program in `pinata_back/` is deployed to Devnet but not connected to the frontend yet. The READMEs are bilingual (English and pt-BR); keep both language sections in sync when you edit them.
 
 - `pinata_front/`: the Next.js app (everything that runs), with its `Dockerfile`
-- `pinata_back/`: the Solana program in Rust/Anchor (phase 1 of 5: written and tested locally, not deployed, not wired to the frontend). Design and business rules: `pinata_back/docs/DESIGN.md` (pt-BR)
+- `pinata_back/`: the Solana program in Rust/Anchor (phase 2 of 5: deployed to Devnet and tested with a real VRF draw, not wired to the frontend), plus `pinata_back/cli`, a Rust client for Devnet. Design and business rules: `pinata_back/docs/DESIGN.md` (pt-BR)
 - `compose.yaml`: Docker Compose services for the frontend (production and dev) and the Anchor toolchain
 - `videos/`: Python tooling that drives the running app with Playwright and renders the pitch and demo MP4s
 
@@ -44,7 +44,10 @@ Solana program (`pinata_back/`), through the `anchor` service (profile `tools`, 
 docker compose run --rm anchor anchor build      # target/deploy/pinata.so
 docker compose run --rm anchor anchor run test   # anchor build + cargo test (unit + LiteSVM)
 docker compose run --rm anchor cargo test --test test_draws <name>   # one test
+docker compose run --rm anchor cargo run -q -p pinata-cli -- status  # Devnet state (also: init <wallet>, draw-demo)
 ```
+
+- Devnet: program `CThrD6V4…`, admin and upgrade authority `keys/deploy-keypair.json` (`DFmPPpaV…`), platform wallet `BHC69pYb…` (the user holds its key). Deploy and upgrade commands are in `pinata_back/README.md`. Every keypair in `keys/` is a secret: generate new ones with `solana-keygen new --silent` so no seed phrase is printed.
 
 - `target/`, the Cargo caches and `~/.config/solana` are Docker volumes, not the host folder. The program keypair is `pinata_back/keys/pinata-program-keypair.json` (git-ignored, program id `CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`). The `pre_build` hook in `Anchor.toml` copies it into `target/deploy/`. Do not run `anchor keys sync` blindly: it rewrites the id from whatever keypair is in `target/deploy/`.
 - The `anchor-lang` crate is 1.2.2 while the CLI is 1.0.2. Pinning `anchor-lang = "=1.0.2"` breaks the build, because its derive macros resolve to 1.2.x. VRF uses `ephemeral-vrf-sdk` 0.17.3 with explicit accounts (`instructions/vrf.rs`), not its `#[vrf]` macros.
