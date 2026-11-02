@@ -8,6 +8,7 @@ pub mod draw;
 pub mod error;
 pub mod events;
 pub mod instructions;
+pub mod pda;
 pub mod state;
 
 use anchor_lang::prelude::*;

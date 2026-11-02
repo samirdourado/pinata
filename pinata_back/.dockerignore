@@ -1,0 +1,7 @@
+# Never send keypairs or build output into an image
+keys/
+target/
+.anchor/
+test-ledger/
+node_modules/
+**/.env

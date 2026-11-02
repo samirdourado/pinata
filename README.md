@@ -90,8 +90,9 @@ Pinata is designed around Solana primitives, so each piece can plug into the wid
 3. ✅ Real wallet connection with Solana Wallet Adapter on Devnet (address and balance)
 4. 🚧 Anchor program: comment payments, fee split, Piñata vaults in PDAs, MagicBlock VRF draws (deployed to Devnet and tested with a real VRF draw, not wired to the frontend yet; see [pinata_back](pinata_back/README.md))
 5. ⏳ Verifiable randomness for Piñata and Platform Pool draws
-6. ⏳ Backend accounts linked to wallets, Blinks for paid comments, USDC support
-7. ⏳ Creator pilot in Brazil, then mainnet
+6. 🚧 API (Rust, Axum, PostgreSQL): sign-in with the wallet, posts, comments checked against their on-chain payment, votes, Piñatas and demo data (working, not wired to the frontend yet)
+7. ⏳ Blinks for paid comments, USDC support
+8. ⏳ Creator pilot in Brazil, then mainnet
 
 ### Team
 
@@ -112,8 +113,8 @@ The pitch and the demo are on YouTube, narrated in English with English subtitle
 
 ```text
 pinata/
-├── compose.yaml    Docker Compose services (frontend and Solana toolchain)
-├── pinata_back/    On-chain program in Rust/Anchor, in progress (see pinata_back/README.md)
+├── compose.yaml    Docker Compose services (frontend, API, PostgreSQL and Solana toolchain)
+├── pinata_back/    Solana program (Rust/Anchor), API (Rust/Axum + PostgreSQL) and Devnet CLI (see pinata_back/README.md)
 ├── pinata_front/   Next.js frontend (see pinata_front/README.md)
 └── videos/         Pitch/demo scripts, EN and pt-BR subtitles, capture and render scripts (the videos are on YouTube)
 ```
@@ -224,8 +225,9 @@ O Pinata foi pensado sobre primitivas da Solana, para que cada parte se conecte 
 3. ✅ Conexão real de carteira com Solana Wallet Adapter na Devnet (endereço e saldo)
 4. 🚧 Programa Anchor: pagamento de comentários, divisão de taxas, cofres da Piñata em PDAs, sorteios com a VRF da MagicBlock (publicado na Devnet e testado com um sorteio real da VRF, ainda não ligado ao frontend; veja a [pinata_back](pinata_back/README.md))
 5. ⏳ Aleatoriedade verificável nos sorteios da Piñata e do Pool
-6. ⏳ Contas em backend vinculadas à carteira, Blinks para comentários pagos, suporte a USDC
-7. ⏳ Piloto com criadores no Brasil e, depois, mainnet
+6. 🚧 API (Rust, Axum, PostgreSQL): login com a carteira, posts, comentários conferidos contra o pagamento on-chain, votos, Piñatas e dados de demonstração (funcionando, ainda não ligada ao frontend)
+7. ⏳ Blinks para comentários pagos, suporte a USDC
+8. ⏳ Piloto com criadores no Brasil e, depois, mainnet
 
 ### Time
 
