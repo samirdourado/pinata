@@ -8,10 +8,7 @@ use anchor_lang::{
 };
 use ephemeral_vrf_sdk::consts as vrf_consts;
 use litesvm::{types::TransactionResult, LiteSVM};
-use pinata::{
-    accounts, instruction, Config, ConfigParams, CreatorProfile, FeeSplit, Pinata, CONFIG_SEED,
-    CREATOR_SEED, IDENTITY_SEED, PINATA_SEED,
-};
+use pinata::{accounts, instruction, Config, ConfigParams, CreatorProfile, FeeSplit, Pinata};
 use solana_account::Account;
 use solana_clock::Clock;
 use solana_keypair::Keypair;
@@ -353,26 +350,15 @@ impl TestEnv {
 
 // ----- Addresses -----
 
-pub fn config_pda() -> Pubkey {
-    Pubkey::find_program_address(&[CONFIG_SEED], &pinata::ID).0
-}
-
-pub fn creator_profile_pda(creator: &Pubkey) -> Pubkey {
-    Pubkey::find_program_address(&[CREATOR_SEED, creator.as_ref()], &pinata::ID).0
-}
-
-pub fn pinata_pda(owner: &Pubkey, round: u64) -> Pubkey {
-    Pubkey::find_program_address(&[PINATA_SEED, owner.as_ref(), &round.to_le_bytes()], &pinata::ID).0
-}
-
-pub fn platform_pinata_pda(round: u64) -> Pubkey {
-    pinata_pda(&config_pda(), round)
-}
+pub use pinata::pda::{
+    config as config_pda, creator_profile as creator_profile_pda, pinata as pinata_pda,
+    platform_pinata as platform_pinata_pda,
+};
 
 pub fn vrf_accounts() -> accounts::VrfAccounts {
     accounts::VrfAccounts {
         oracle_queue: vrf_consts::DEFAULT_QUEUE,
-        program_identity: Pubkey::find_program_address(&[IDENTITY_SEED], &pinata::ID).0,
+        program_identity: pinata::pda::program_identity(),
         vrf_program: vrf_consts::VRF_PROGRAM_ID,
         slot_hashes: ephemeral_vrf_sdk::compat::slot_hashes::ID,
     }

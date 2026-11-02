@@ -10,3 +10,6 @@ test-ledger
 # Program and wallet keypairs are secrets: never commit them
 keys/
 *-keypair.json
+
+# Local settings (api/.env.example is the template)
+.env

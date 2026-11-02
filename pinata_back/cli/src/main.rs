@@ -4,11 +4,15 @@
 //!   cargo run -p pinata-cli -- init <platform_wallet>
 //!   cargo run -p pinata-cli -- status
 //!   cargo run -p pinata-cli -- draw-demo
+//!   cargo run -p pinata-cli -- demo-pinatas
+//!   cargo run -p pinata-cli -- api-demo <api_url>
 //!
 //! Options: `--url <rpc>` (default: public Devnet RPC) and `--keypair <file>`
 //! (default: keys/deploy-keypair.json, the admin and upgrade authority).
 
-use std::{error::Error, fs, path::Path, str::FromStr, thread, time::Duration};
+mod api_demo;
+
+use std::{error::Error, path::Path, str::FromStr, thread, time::Duration};
 
 use anchor_lang::{
     prelude::{AccountMeta, Pubkey},
@@ -17,11 +21,15 @@ use anchor_lang::{
 };
 use ephemeral_vrf_sdk::consts as vrf_consts;
 use pinata::{
-    accounts, instruction, Config, ConfigParams, CreatorProfile, FeeSplit, Pinata, PinataKind,
-    PinataStatus, CONFIG_SEED, CREATOR_SEED, IDENTITY_SEED, PINATA_SEED,
+    accounts, instruction,
+    pda::{
+        config as config_pda, creator_profile as creator_profile_pda, pinata as pinata_pda,
+        platform_pinata as platform_pinata_pda,
+    },
+    Config, ConfigParams, CreatorProfile, FeeSplit, Pinata, PinataKind, PinataStatus,
 };
 use solana_commitment_config::CommitmentConfig;
-use solana_keypair::Keypair;
+use solana_keypair::{read_keypair_file, write_keypair_file, Keypair};
 use solana_rpc_client::rpc_client::RpcClient;
 use solana_signer::Signer;
 use solana_transaction::Transaction;
@@ -35,6 +43,10 @@ const DEFAULT_KEYPAIR: &str = "keys/deploy-keypair.json";
 const COMMENTER_KEYPAIRS: [&str; 2] = ["keys/devnet-commenter-1.json", "keys/devnet-commenter-2.json"];
 const COMMENTER_FUNDING: u64 = SOL / 50; // 0.02 SOL each
 const DRAW_TIMEOUT: Duration = Duration::from_secs(120);
+/// Demo profiles' keypairs, written by `pinata-api seed`
+const DEMO_KEYS_DIR: &str = "keys/demo";
+/// Enough for a Piñata account's rent and fees
+const DEMO_CREATOR_FUNDING: u64 = SOL / 100;
 
 /// Devnet parameters: the agreed business rules with small amounts, so a
 /// whole round can be tested with a few SOL. The admin can change them later
@@ -88,7 +100,11 @@ fn run() -> Result<()> {
         ["init", platform_wallet] => client.init(Pubkey::from_str(platform_wallet)?),
         ["status"] => client.status(),
         ["draw-demo"] => client.draw_demo(),
-        _ => Err("usage: pinata-cli [--url <rpc>] [--keypair <file>] init <platform_wallet> | status | draw-demo".into()),
+        ["demo-pinatas"] => client.demo_pinatas(),
+        ["api-demo", api_url] => api_demo::run(&client, api_url.trim_end_matches('/')),
+        _ => Err("usage: pinata-cli [--url <rpc>] [--keypair <file>] \
+                  init <platform_wallet> | status | draw-demo | demo-pinatas | api-demo <api_url>"
+            .into()),
     }
 }
 
@@ -158,43 +174,13 @@ impl Client {
     /// creator. Safe to rerun: it resumes from the current state.
     fn draw_demo(&self) -> Result<()> {
         let creator = &self.admin;
-        let profile = self.fetch::<CreatorProfile>(&creator_profile_pda(&creator.pubkey()))?;
-        let round = match profile {
-            Some(profile) if profile.has_active_pinata => profile.round,
-            profile => {
-                let round = profile.map_or(1, |p| p.round + 1);
-                println!("Opening creator Piñata round {round} (target 0.01 SOL, early burst from 1%)");
-                let ix = Instruction::new_with_bytes(
-                    pinata::ID,
-                    &instruction::OpenCreatorPinata {
-                        round,
-                        target_lamports: SOL / 100,
-                        threshold_bps: 100,
-                    }
-                    .data(),
-                    accounts::OpenCreatorPinata {
-                        creator: creator.pubkey(),
-                        config: config_pda(),
-                        creator_profile: creator_profile_pda(&creator.pubkey()),
-                        pinata: pinata_pda(&creator.pubkey(), round),
-                        system_program: system_program::ID,
-                    }
-                    .to_account_metas(None),
-                );
-                self.send(&[ix], creator, &[])?;
-                round
-            }
-        };
+        let round = self.ensure_open_pinata(creator, SOL / 100, 100)?;
         let address = pinata_pda(&creator.pubkey(), round);
 
         if self.pinata(&address)?.status == PinataStatus::Open {
             for path in COMMENTER_KEYPAIRS {
                 let commenter = load_or_create_keypair(path)?;
-                if self.rpc.get_balance(&commenter.pubkey())? < COMMENTER_FUNDING / 2 {
-                    println!("Funding {} with {}", commenter.pubkey(), sol(COMMENTER_FUNDING));
-                    let ix = transfer(&creator.pubkey(), &commenter.pubkey(), COMMENTER_FUNDING);
-                    self.send(&[ix], creator, &[])?;
-                }
+                self.ensure_funded(&commenter.pubkey(), COMMENTER_FUNDING)?;
                 println!("{} pays a comment", commenter.pubkey());
                 self.pay_comment(&commenter, &creator.pubkey(), round)?;
             }
@@ -232,6 +218,66 @@ impl Client {
         Ok(())
     }
 
+    /// The creator's active Piñata round, opening a new one (`target_lamports`,
+    /// early burst from `threshold_bps`) when there is none.
+    fn ensure_open_pinata(&self, creator: &Keypair, target_lamports: u64, threshold_bps: u16) -> Result<u64> {
+        let profile = self.fetch::<CreatorProfile>(&creator_profile_pda(&creator.pubkey()))?;
+        if let Some(profile) = &profile {
+            if profile.has_active_pinata {
+                return Ok(profile.round);
+            }
+        }
+        let round = profile.map_or(1, |p| p.round + 1);
+        println!(
+            "Opening Piñata round {round} for {} (target {}, early burst from {}%)",
+            creator.pubkey(),
+            sol(target_lamports),
+            threshold_bps / 100
+        );
+        let ix = Instruction::new_with_bytes(
+            pinata::ID,
+            &instruction::OpenCreatorPinata { round, target_lamports, threshold_bps }.data(),
+            accounts::OpenCreatorPinata {
+                creator: creator.pubkey(),
+                config: config_pda(),
+                creator_profile: creator_profile_pda(&creator.pubkey()),
+                pinata: pinata_pda(&creator.pubkey(), round),
+                system_program: system_program::ID,
+            }
+            .to_account_metas(None),
+        );
+        self.send(&[ix], creator, &[])?;
+        Ok(round)
+    }
+
+    /// Tops `wallet` up to `lamports` from the admin key when it runs below half of it.
+    fn ensure_funded(&self, wallet: &Pubkey, lamports: u64) -> Result<()> {
+        if self.rpc.get_balance(wallet)? < lamports / 2 {
+            println!("Funding {wallet} with {}", sol(lamports));
+            self.send(&[transfer(&self.admin.pubkey(), wallet, lamports)], &self.admin, &[])?;
+        }
+        Ok(())
+    }
+
+    /// Opens a real Devnet Piñata (target 1 SOL, early burst from 60%) for every
+    /// demo profile whose keypair `pinata-api seed` saved in keys/demo/, so their
+    /// posts can receive paid comments.
+    fn demo_pinatas(&self) -> Result<()> {
+        let mut paths: Vec<_> = std::fs::read_dir(DEMO_KEYS_DIR)
+            .map_err(|_| format!("{DEMO_KEYS_DIR} not found: run `pinata-api seed` first"))?
+            .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+            .filter(|path| path.extension().is_some_and(|ext| ext == "json"))
+            .collect();
+        paths.sort();
+        for path in paths {
+            let creator = read_keypair(&path.to_string_lossy())?;
+            println!("{}", path.display());
+            self.ensure_funded(&creator.pubkey(), DEMO_CREATOR_FUNDING)?;
+            self.ensure_open_pinata(&creator, SOL, 6_000)?;
+        }
+        Ok(())
+    }
+
     fn pay_comment(&self, commenter: &Keypair, creator: &Pubkey, creator_round: u64) -> Result<()> {
         let config = self.fetch::<Config>(&config_pda())?.ok_or("not initialized")?;
         let ix = Instruction::new_with_bytes(
@@ -253,7 +299,7 @@ impl Client {
             }
             .to_account_metas(None),
         );
-        self.send(&[ix], commenter, &[])
+        self.send(&[ix], commenter, &[]).map(drop)
     }
 
     fn settle(&self, address: &Pubkey, state: &Pinata) -> Result<()> {
@@ -273,7 +319,7 @@ impl Client {
         // The winners receive the prize, so they go in as writable extra accounts
         metas.extend(state.winners().iter().map(|winner| AccountMeta::new(*winner, false)));
         let ix = Instruction::new_with_bytes(pinata::ID, &instruction::Settle {}.data(), metas);
-        self.send(&[ix], &self.admin, &[])
+        self.send(&[ix], &self.admin, &[]).map(drop)
     }
 
     fn print_pinata(&self, address: &Pubkey) -> Result<()> {
@@ -301,39 +347,22 @@ impl Client {
             .transpose()
     }
 
-    fn send(&self, ixs: &[Instruction], payer: &Keypair, extra_signers: &[&Keypair]) -> Result<()> {
+    /// Signs, sends and waits for confirmation. Returns the transaction signature.
+    fn send(&self, ixs: &[Instruction], payer: &Keypair, extra_signers: &[&Keypair]) -> Result<String> {
         let mut signers = vec![payer];
         signers.extend(extra_signers);
         let blockhash = self.rpc.get_latest_blockhash()?;
         let tx = Transaction::new_signed_with_payer(ixs, Some(&payer.pubkey()), &signers, blockhash);
         let signature = self.rpc.send_and_confirm_transaction(&tx).map_err(|error| format!("{error:#?}"))?;
         println!("  tx https://solscan.io/tx/{signature}?cluster=devnet");
-        Ok(())
+        Ok(signature.to_string())
     }
-}
-
-// ----- Addresses (same seeds as the program) -----
-
-fn config_pda() -> Pubkey {
-    Pubkey::find_program_address(&[CONFIG_SEED], &pinata::ID).0
-}
-
-fn creator_profile_pda(creator: &Pubkey) -> Pubkey {
-    Pubkey::find_program_address(&[CREATOR_SEED, creator.as_ref()], &pinata::ID).0
-}
-
-fn pinata_pda(owner: &Pubkey, round: u64) -> Pubkey {
-    Pubkey::find_program_address(&[PINATA_SEED, owner.as_ref(), &round.to_le_bytes()], &pinata::ID).0
-}
-
-fn platform_pinata_pda(round: u64) -> Pubkey {
-    pinata_pda(&config_pda(), round)
 }
 
 fn vrf_accounts() -> accounts::VrfAccounts {
     accounts::VrfAccounts {
         oracle_queue: vrf_consts::DEFAULT_QUEUE,
-        program_identity: Pubkey::find_program_address(&[IDENTITY_SEED], &pinata::ID).0,
+        program_identity: pinata::pda::program_identity(),
         vrf_program: vrf_consts::VRF_PROGRAM_ID,
         slot_hashes: ephemeral_vrf_sdk::compat::slot_hashes::ID,
     }
@@ -353,17 +382,9 @@ fn transfer(from: &Pubkey, to: &Pubkey, lamports: u64) -> Instruction {
     )
 }
 
-/// Reads a keypair file in the Solana CLI format: a JSON array of 64 bytes.
+/// Reads a keypair file in the Solana CLI format (a JSON array of 64 bytes).
 fn read_keypair(path: &str) -> Result<Keypair> {
-    let text = fs::read_to_string(path).map_err(|error| format!("{path}: {error}"))?;
-    let bytes = text
-        .trim()
-        .trim_start_matches('[')
-        .trim_end_matches(']')
-        .split(',')
-        .map(|byte| byte.trim().parse::<u8>())
-        .collect::<std::result::Result<Vec<_>, _>>()?;
-    Ok(Keypair::try_from(bytes.as_slice())?)
+    read_keypair_file(path).map_err(|error| format!("{path}: {error}").into())
 }
 
 fn load_or_create_keypair(path: &str) -> Result<Keypair> {
@@ -371,8 +392,7 @@ fn load_or_create_keypair(path: &str) -> Result<Keypair> {
         return read_keypair(path);
     }
     let keypair = Keypair::new();
-    let bytes: Vec<String> = keypair.to_bytes().iter().map(u8::to_string).collect();
-    fs::write(path, format!("[{}]", bytes.join(",")))?;
+    write_keypair_file(&keypair, path)?;
     Ok(keypair)
 }
 

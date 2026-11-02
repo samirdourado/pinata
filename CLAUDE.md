@@ -4,11 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Pinata is a hackathon prototype of a Solana SocialFi app: posting is free, comments carry a small SOL fee, and 40% of each fee fills the post author's "Creator Piñata" prize pool. **Only the wallet connection is real:** a Solana wallet connects through the Solana Wallet Adapter on Devnet and the app reads its balance, but payments, Piñata balances and prizes are simulated. The app has no backend and signs no transactions; all app state lives in the browser's `localStorage`. The on-chain program in `pinata_back/` is deployed to Devnet but not connected to the frontend yet. The READMEs are bilingual (English and pt-BR); keep both language sections in sync when you edit them.
+Pinata is a hackathon prototype of a Solana SocialFi app: posting is free, comments carry a small SOL fee, and 40% of each fee fills the post author's "Creator Piñata" prize pool. **Only the wallet connection is real:** a Solana wallet connects through the Solana Wallet Adapter on Devnet and the app reads its balance, but payments, Piñata balances and prizes are simulated. The app has no backend and signs no transactions; all app state lives in the browser's `localStorage`. The on-chain program and the API in `pinata_back/` work (program on Devnet, API with PostgreSQL) but are not connected to the frontend yet. The READMEs are bilingual (English and pt-BR); keep both language sections in sync when you edit them.
 
 - `pinata_front/`: the Next.js app (everything that runs), with its `Dockerfile`
-- `pinata_back/`: the Solana program in Rust/Anchor (phase 2 of 5: deployed to Devnet and tested with a real VRF draw, not wired to the frontend), plus `pinata_back/cli`, a Rust client for Devnet. Design and business rules: `pinata_back/docs/DESIGN.md` (pt-BR)
-- `compose.yaml`: Docker Compose services for the frontend (production and dev) and the Anchor toolchain
+- `pinata_back/`: Cargo workspace (phase 3 of 5, nothing wired to the frontend yet). Design and business rules: `pinata_back/docs/DESIGN.md` (pt-BR).
+  - `programs/pinata`: the Solana program in Rust/Anchor, deployed to Devnet and tested with a real VRF draw.
+  - `api`: the HTTP API (Axum, SQLx, PostgreSQL).
+  - `cli`: a Rust client for Devnet.
+- `compose.yaml`: Docker Compose services for the frontend (production and dev), the API and PostgreSQL (profile `api`), and the Anchor toolchain (profile `tools`)
 - `videos/`: Python tooling that drives the running app with Playwright and renders the pitch and demo MP4s
 
 ## Commands
@@ -48,6 +51,23 @@ docker compose run --rm anchor cargo run -q -p pinata-cli -- status  # Devnet st
 ```
 
 - Devnet: program `CThrD6V4…`, admin and upgrade authority `keys/deploy-keypair.json` (`DFmPPpaV…`), platform wallet `BHC69pYb…` (the user holds its key). Deploy and upgrade commands are in `pinata_back/README.md`. Every keypair in `keys/` is a secret: generate new ones with `solana-keygen new --silent` so no seed phrase is printed.
+- `programs/pinata/src/pda.rs` is the single source of account addresses; the CLI, the API and the tests import it.
+
+API (`pinata_back/api`), from the repo root:
+
+```bash
+docker compose --profile api up --build -d db api                       # db (pinata-db, host port 5433) + api (pinata-api, port 8080)
+docker compose run --rm anchor cargo run -q -p pinata-api -- seed  # demo data from mockData.ts (--reset to recreate)
+docker compose run --rm anchor cargo run -q -p pinata-cli -- demo-pinatas                # Devnet Piñatas for the demo profiles
+docker compose run --rm anchor cargo run -q -p pinata-cli -- api-demo http://api:8080    # end-to-end test: sign-in, paid comment, vote
+```
+
+- The `anchor` container reaches the database as `db` (its `DATABASE_URL` is set in `compose.yaml`) and the API as `api`. Settings are environment variables listed in `api/.env.example`. A local `pinata_back/.env` (git-ignored) sets `DEMO_OWNER_WALLET`, the user's dev wallet that owns the demo profile `samirdourado`.
+- Migrations live in `api/migrations/` and run when the API starts (`sqlx::migrate!`). Queries use the runtime `sqlx::query_as` (no compile-time `query!`), so building needs no database.
+- Sign-in is the wallet only (no passwords). `/auth/nonce` returns a Sign In With Solana message, `/auth/verify` checks the ed25519 signature, and the session is an HttpOnly cookie (`pinata_session`) whose SHA-256 is stored. CORS allows only `FRONTEND_ORIGIN`, with credentials.
+- Comments are keyed by the paying wallet (`commenter_wallet`), not by account. They link to profiles with `LEFT JOIN users ON users.wallet = comments.commenter_wallet`, so an anonymous commenter who signs in later sees their old comments under their profile.
+- A comment is `pending` until `/comments/{id}/confirm`. `chain.rs` then fetches the transaction and matches the `pay_comment` instruction: comment id (UUID bytes), commenter, creator, creator Piñata and amount. The account positions follow the field order of `PayComment`, so reordering that struct breaks the check.
+- Demo profiles get keypairs in `keys/demo/` (created by `seed`). `samirdourado` uses `DEMO_OWNER_WALLET` instead.
 
 - `target/`, the Cargo caches and `~/.config/solana` are Docker volumes, not the host folder. The program keypair is `pinata_back/keys/pinata-program-keypair.json` (git-ignored, program id `CThrD6V4TBegostJqwo9PvGVRZnEUkDba5mNDxv5toN8`). The `pre_build` hook in `Anchor.toml` copies it into `target/deploy/`. Do not run `anchor keys sync` blindly: it rewrites the id from whatever keypair is in `target/deploy/`.
 - The `anchor-lang` crate is 1.2.2 while the CLI is 1.0.2. Pinning `anchor-lang = "=1.0.2"` breaks the build, because its derive macros resolve to 1.2.x. VRF uses `ephemeral-vrf-sdk` 0.17.3 with explicit accounts (`instructions/vrf.rs`), not its `#[vrf]` macros.

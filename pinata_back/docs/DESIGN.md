@@ -23,8 +23,12 @@ Navegador (Next.js) ──HTTP──> API (Rust, Axum) ──SQL──> PostgreS
 
 ### Usuários
 
-- Só quem **posta** precisa se cadastrar (o criador). A conta do criador fica vinculada a uma carteira.
+- Só quem **posta** precisa de conta (o criador).
+- **O login é a própria carteira** (decidido em 02/11/2026):
+  - A carteira assina uma mensagem; não há senha nem e-mail obrigatório.
+  - Uma carteira é uma conta, e a carteira da conta é a dona da Piñata on-chain.
 - **Qualquer pessoa comenta**, inclusive anônima: basta pagar com uma carteira. A carteira é a identidade do comentarista.
+- **Vínculo automático:** se alguém comentou anônimo e depois entra com a mesma carteira, todos os comentários antigos passam a mostrar o perfil. Não existe tabela separada de comentários anônimos; o prêmio já chega sozinho, porque o bilhete on-chain é a carteira.
 - Todos veem os comentários de todos.
 
 ### Divisão de cada comentário pago
@@ -145,25 +149,61 @@ Open ──(meta ou mínimo atingido)──> Drawing ──(VRF)──> Drawn �
   └─(sem bilhetes)── settle direto: 50% plataforma, 50% pool
 ```
 
-## 5. Banco de dados (fase 3, rascunho)
+## 5. API e banco de dados
 
-- `creators`: id, username, nome, e-mail, hash da senha, bio, avatar, carteira, criado_em
-- `posts`: id, creator_id, conteúdo, criado_em
-- `comments`: id (UUID, também enviado on-chain), post_id, carteira do comentarista, conteúdo, valor em lamports, assinatura da transação, status (`pending`/`confirmed`/`failed`), rodada da piñata, criado_em, confirmado_em
-- `votes`: post_id, carteira ou criador, valor (+1/-1), único por votante e post
-- `pinata_rounds` e `pinata_winners`: espelho do que aconteceu on-chain, para exibir rápido
+API em Rust (Axum + SQLx) com PostgreSQL 18. O esquema completo e comentado está em `api/migrations/0001_init.sql`.
 
-Fluxo de um comentário: o frontend pede à API um `comment_id` → a carteira assina `pay_comment` com esse id → a API confere a transação na Solana → o comentário é publicado.
+| Tabela | Conteúdo |
+| --- | --- |
+| `users` | carteira (única), username, nome, bio, avatar, se é perfil de demonstração |
+| `auth_nonces` | mensagens de login a assinar (uso único, valem 10 minutos) |
+| `sessions` | sessões de login; só o hash SHA-256 do token é guardado |
+| `posts` | autor, conteúdo, contadores de curtidas e descurtidas |
+| `comments` | id (também enviado on-chain), post, carteira que pagou, conteúdo, valor, status (`pending`/`confirmed`/`failed`), rodada da piñata, assinatura da transação (única) |
+| `votes` | um voto (+1/-1) por conta e post; os contadores do post mudam na mesma transação |
+| `pinata_winners` | histórico de vencedores (a conta da piñata é fechada on-chain depois do pagamento) |
 
-## 6. Fases
+### Login com a carteira
+
+1. `POST /auth/nonce`: a API devolve uma mensagem no formato *Sign In With Solana*, com um código de uso único.
+2. A carteira assina a mensagem. É grátis, não é uma transação e não move SOL.
+3. `POST /auth/verify`: a API confere a assinatura ed25519 com o endereço da carteira, cria a conta no primeiro login e abre a sessão num cookie HttpOnly válido por 30 dias.
+
+### Comentário pago
+
+1. `POST /posts/{id}/comments`:
+   - a API confere que o autor tem piñata aberta e que o valor é pelo menos o mínimo;
+   - guarda o comentário como `pending`;
+   - devolve as contas para montar o `pay_comment`.
+2. A carteira assina e envia o `pay_comment`, com o id do comentário dentro da transação.
+3. `POST /comments/{id}/confirm` com a assinatura da transação:
+   - a API lê a transação na Solana e confere programa, id do comentário, carteira, criador, piñata e valor;
+   - só então publica o comentário.
+   - Uma transação nunca publica dois comentários (assinatura única).
+   - Comentários `pending` não pagos expiram em 1 hora.
+
+### Vencedores **[decisão técnica]**
+
+Por enquanto, a tabela `pinata_winners` só tem os dados de demonstração. A automação da fase 5 vai preenchê-la a cada `settle`.
+
+## 6. Dados de demonstração
+
+`pinata-api seed` carrega os perfis, posts, comentários e vencedores de `pinata_front/data/mockData.ts`:
+
+- **Carteira de cada perfil:** a chave fica em `keys/demo/`, fora do Git.
+- **Piñatas reais na Devnet:** `pinata-cli demo-pinatas` abre uma para cada perfil (meta de 1 SOL, estouro antecipado a partir de 60%), então os posts de demonstração recebem comentários pagos de verdade.
+- **Perfil `samirdourado`:** pertence à carteira `DEMO_OWNER_WALLET` (a samirdev). O Samir entra com ela e posta como esse perfil.
+- **Dados sem pagamento:** os comentários e vencedores de demonstração nunca foram pagos on-chain, por isso não têm assinatura de transação.
+
+## 7. Fases
 
 1. **Programa Anchor + testes locais** (LiteSVM) e ambiente de build em Docker
 2. **Deploy na Devnet e teste do sorteio com a VRF real** (feito em 02/11/2026: o oráculo respondeu em cerca de 2 s; os endereços estão no README)
-3. API em Rust (Axum + SQLx) + PostgreSQL, com migrations e seed dos dados de demonstração
+3. **API em Rust (Axum + SQLx) + PostgreSQL, com migrations e seed dos dados de demonstração** (feito em 02/11/2026; testada de ponta a ponta com um comentário pago na Devnet)
 4. Frontend: trocar o `localStorage` pela API e fazer os pagamentos reais
 5. Automação: estouros ao atingir 100% e no dia 1º
 
-## 7. Versões e testes
+## 8. Versões e testes
 
 - Ferramentas: imagem Docker oficial `solanafoundation/anchor:v1.0.2` (Anchor CLI 1.0.2, Solana CLI 3.1.10)
 - Crate `anchor-lang` **1.2.2**. As macros do Anchor sempre resolvem para a versão 1.x mais nova, e fixar a `anchor-lang` em 1.0.2 quebra o build.

@@ -38,13 +38,56 @@ services:
         - action: rebuild
           path: ./pinata_front/package-lock.json
 
-  # Solana/Anchor toolchain for the on-chain program:
+  # PostgreSQL for the API: docker compose --profile api up -d db
+  # Port 5433 on the host, so it does not clash with a local PostgreSQL on 5432.
+  # Development-only credentials.
+  db:
+    profiles: [api]
+    image: postgres:18-alpine
+    container_name: pinata-db
+    environment:
+      POSTGRES_USER: pinata
+      POSTGRES_PASSWORD: pinata
+      POSTGRES_DB: pinata
+    ports:
+      - "5433:5432"
+    volumes:
+      # PostgreSQL 18 images keep their data under /var/lib/postgresql
+      - pinata-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pinata -d pinata"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # HTTP API (Rust, Axum): docker compose --profile api up --build
+  api:
+    profiles: [api]
+    build:
+      context: ./pinata_back
+      dockerfile: api/Dockerfile
+    image: pinata-api
+    container_name: pinata-api
+    environment:
+      DATABASE_URL: postgres://pinata:pinata@db:5432/pinata
+      FRONTEND_ORIGIN: http://localhost:3000
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Solana/Anchor toolchain for the on-chain program, the CLI and API development:
   # docker compose run --rm anchor <command>, e.g. anchor build, cargo test
   anchor:
     profiles: [tools]
     image: solanafoundation/anchor:v1.0.2
     container_name: pinata-anchor
     working_dir: /workdir/pinata_back
+    environment:
+      # Reaches the db service when it is running (docker compose --profile api up -d db)
+      DATABASE_URL: postgres://pinata:pinata@db:5432/pinata
     volumes:
       - ./pinata_back:/workdir/pinata_back
       # Build output and caches live in volumes: much faster than the Windows bind mount
@@ -54,6 +97,7 @@ services:
       - solana-config:/root/.config/solana
 
 volumes:
+  pinata-db:
   anchor-target:
   anchor-cargo-registry:
   anchor-cargo-git:
